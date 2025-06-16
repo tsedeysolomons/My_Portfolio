@@ -6,20 +6,20 @@ export default function Home() {
     <>
       <div className="min-h-screen bg-black text-white mr-0">
         {/* Navigation */}
-        <header className="py-4 px-6 flex items-center justify-between border-b border-gray-800">
+        <header className="py-4 px-6 flex items-center justify-between border-b border-gray-800 bg-gray-900">
           <div className="text-xl font-bold">DevPortfolio</div>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8 ">
             <Link to="/about" className="text-gray-300 hover:text-white">
               About
             </Link>
-            <Link to="#skills" className="text-gray-300 hover:text-white">
-              Skills
+            <Link to="/skill" className="text-gray-300 hover:text-white">
+              Skill
             </Link>
-            <Link to="#projects" className="text-gray-300 hover:text-white">
-              Projects
+            <Link to="/project" className="text-gray-300 hover:text-white">
+              Project
             </Link>
-            <Link to="#experience" className="text-gray-300 hover:text-white">
+            <Link to="/experience" className="text-gray-300 hover:text-white">
               Experience
             </Link>
             <Link to="/contact" className="text-gray-300 hover:text-white">
@@ -28,14 +28,14 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full">
+            <button className="p-2 rounded-full hover:bg-amber-300">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke="white"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -57,7 +57,6 @@ export default function Home() {
                 className="flex items-center"
                 target="_blank"
                 rel="noopener noreferrer"
-                download
               >
                 Resume
               </a>
@@ -78,7 +77,7 @@ export default function Home() {
 
           <div className="flex flex-wrap justify-center gap-4 mb-16">
             <a
-              href="#contact"
+              href="/contact"
               className="px-6 py-3 bg-white text-black rounded-md font-medium flex items-center"
             >
               Contact Me
@@ -99,7 +98,7 @@ export default function Home() {
               </svg>
             </a>
             <a
-              href="#projects"
+              href="/project"
               className="px-6 py-3 border border-gray-700 text-white rounded-md font-medium hover:bg-gray-800"
             >
               View My Work
@@ -128,7 +127,7 @@ export default function Home() {
               </svg>
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://linkedin.com/in/Tsedey Solomon" // Replace with your actual LinkedIn link
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-white"
@@ -221,7 +220,7 @@ export default function Home() {
             {/* Right: Social Icons */}
             <div className="flex space-x-4 text-xl">
               <a
-                href="https://github.com/yourusername"
+                href="https://github.com/tsedeysolomons/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-gray-400"
@@ -229,7 +228,7 @@ export default function Home() {
                 <FaGithub />
               </a>
               <a
-                href="https://linkedin.com/in/yourusername"
+                href="https://linkedin.com/in/tsedeysolomon"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-gray-400"
@@ -237,7 +236,7 @@ export default function Home() {
                 <FaLinkedin />
               </a>
               <a
-                href="mailto:youremail@example.com"
+                href="mailto:tsedeys19@gmail.com"
                 className="hover:text-gray-400"
               >
                 <FaEnvelope />
