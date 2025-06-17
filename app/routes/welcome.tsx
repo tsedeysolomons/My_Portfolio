@@ -6,7 +6,7 @@ export default function Home() {
     <>
       <div className="min-h-screen bg-black text-white mr-0">
         {/* Navigation */}
-        <header className="py-4 px-6 flex items-center justify-between border-b border-gray-800 bg-gray-900">
+        <header className="sticky top-0 z-40 py-4 px-6 flex items-center justify-between border-b border-gray-800 bg-gray-900">
           <div className="text-xl font-bold">DevPortfolio</div>
 
           <nav className="hidden md:flex items-center space-x-8 ">

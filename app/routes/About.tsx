@@ -16,18 +16,18 @@ function about() {
     <>
       <div className=" bg-black text-white mr-0">
         {/* Navigation */}
-        <header className="py-4 px-6 flex items-center justify-between border-b border-gray-800">
+        <header className="sticky top-0 z-40 py-4 px-6 flex items-center justify-between border-b border-gray-800 bg-gray-900">
           <div className="text-xl font-bold">DevPortfolio</div>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8 ">
             <Link to="/about" className="text-gray-300 hover:text-white">
               About
             </Link>
             <Link to="/skill" className="text-gray-300 hover:text-white">
-              Skills
+              Skill
             </Link>
-            <Link to="project" className="text-gray-300 hover:text-white">
-              Projects
+            <Link to="/project" className="text-gray-300 hover:text-white">
+              Project
             </Link>
             <Link to="/experience" className="text-gray-300 hover:text-white">
               Experience
@@ -38,14 +38,14 @@ function about() {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full">
+            <button className="p-2 rounded-full hover:bg-amber-300">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke="white"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -67,7 +67,6 @@ function about() {
                 className="flex items-center"
                 target="_blank"
                 rel="noopener noreferrer"
-                download
               >
                 Resume
               </a>
