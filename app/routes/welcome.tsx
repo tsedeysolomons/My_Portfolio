@@ -25,6 +25,9 @@ export default function Home() {
             <Link to="/contact" className="text-gray-300 hover:text-white">
               Contact
             </Link>
+            <Link to="/Blog" className="text-gray-300 hover:text-white">
+              Blog
+            </Link>
           </nav>
 
           <div className="flex items-center space-x-4">

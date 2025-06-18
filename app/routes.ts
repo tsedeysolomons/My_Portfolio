@@ -8,4 +8,5 @@ export default [
   route("skill", "./routes/skill.tsx"),
   route("project", "./routes/project.tsx"),
   route("experience", "./routes/experience.tsx"),
+  route("blog", "./routes/blog.tsx"),
 ] satisfies RouteConfig;
