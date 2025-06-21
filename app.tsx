@@ -1,16 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-//import ContactPage from "./app/routes/Contact";
-import Home from "./app/routes/home";
-import About from "./app/routes/About";
+// src/App.tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Applayout from "~/components/layout/Applayout";
+import About from "~/routes/About";
+import Contact from "~/routes/Contact";
+import Home from "~/routes/home";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route element={<Applayout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+        </Route>
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
+
 export default App;
