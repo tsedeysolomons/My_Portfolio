@@ -1,13 +1,8 @@
 //import Link from "next/link";
-import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
-import { Link } from "react-router";
 export default function Home() {
   return (
     <>
-      <div className="min-h-screen bg-black text-white mr-0">
-        {/* Header Section */}
-
-        {/* Hero Section */}
+      <div className="min-h-screen  text-xl mr-0">
         <main className="flex flex-col items-center justify-center text-center px-4 py-20">
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
             Hi, I&apos;m Tsedey Solomon
@@ -21,12 +16,12 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-4 mb-16">
             <a
               href="/contact"
-              className="px-6 py-3 bg-white text-black rounded-md font-medium flex items-center"
+              className="px-5 py-3 border border-gray-700  rounded-md font-bold flex items-center hover:bg-gray-500"
             >
               Contact Me
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
+                width="10"
                 height="20"
                 viewBox="0 0 24 24"
                 fill="none"
@@ -42,7 +37,7 @@ export default function Home() {
             </a>
             <a
               href="/project"
-              className="px-6 py-3 border border-gray-700 text-white rounded-md font-medium hover:bg-gray-800"
+              className="px-6 py-3 font-bold border border-gray-700 text-xl rounded-md  hover:bg-gray-500"
             >
               View My Work
             </a>
@@ -135,7 +130,6 @@ export default function Home() {
           </div>
         </main>
       </div>
-
-      </>
+    </>
   );
 }

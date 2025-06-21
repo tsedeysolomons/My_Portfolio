@@ -318,7 +318,7 @@ export default function blog() {
     if (!post) return null;
 
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen ">
         <div className="container py-8">
           <Button
             variant="ghost"
@@ -338,7 +338,7 @@ export default function blog() {
                 {post.title}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
+              <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6 ml-20">
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4" />
                   <span>{post.author}</span>
@@ -377,11 +377,11 @@ export default function blog() {
   }
 
   return (
-    <div className="min-h-screen bg-black ">
+    <div className="min-h-screen ml-24 ">
       <div className="container py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-white md:text-5xl font-bold mb-4">Blog</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4">Blog</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Thoughts, tutorials, and insights about web development, embedded
             systems, and technology
