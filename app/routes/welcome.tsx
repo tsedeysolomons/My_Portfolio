@@ -109,7 +109,7 @@ export default function Home() {
             </a>
 
             <a
-              href="mailto:contact@example.com"
+              href="mailto:tsdeys19@gmail.com"
               className="text-gray-400 hover:text-white"
             >
               <svg
