@@ -22,8 +22,11 @@ function about() {
             Tsedey Solomon
           </h1>
           <p className="text-3xl md:text-2xl  mt-8 max-w-xl">
-            Full Stack Developer passionate about creating exceptional digital
-            experiences and solving complex problems through code.
+            Full Stack Developer with a strong foundation in web and mobile
+            technologies, passionate about creating impactful digital
+            experiences. Known for being a fast learner, adaptable, and deeply
+            committed to solving real-world problems through clean and
+            thoughtful code.
           </p>
           <div className="flex items-center gap-6 mt-8 text-xl">
             <div className="flex items-center gap-2">
@@ -56,16 +59,17 @@ function about() {
           <div className="grid md:grid-cols-2 gap-12">
             <div className="space-y-6">
               <p className="text-lg  leading-relaxed">
-                I'm a passionate full-stack developer with over 5 years of
-                experience building web applications that make a difference. I
-                love turning complex problems into simple, beautiful, and
-                intuitive solutions.
+                I'm a passionate Full Stack Developer with hands-on experience
+                in building impactful web and mobile applications. With a strong
+                foundation in both frontend and backend development, I enjoy
+                turning complex problems into elegant, user-friendly solutions.
+                
               </p>
               <p className="text-lg leading-relaxed">
-                When I'm not coding, you can find me exploring new technologies,
-                contributing to open-source projects, or sharing knowledge with
-                the developer community through blog posts and speaking
-                engagements.
+              Beyond coding, I’m always exploring new technologies like React
+                Native and microcontroller integrations. I believe in continuous
+                learning and enjoy contributing to the tech community by sharing
+                ideas, writing blogs, and supporting fellow developers.
               </p>
             </div>
             <div className="space-y-8">
