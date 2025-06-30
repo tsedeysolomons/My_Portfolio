@@ -8,10 +8,12 @@ function skill() {
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl ">
-                Skills & Technologies
+                Skills & Technologie
               </h2>
               <p className="max-w-[700px] text-3xl md:text-xl">
-                Here are some of the technologies and tools I work with
+                These are the core technologies, frameworks, and tools I rely on
+                to design, develop, and deploy robust web and mobile
+                applications.
               </p>
             </div>
           </div>
