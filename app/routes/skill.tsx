@@ -20,11 +20,11 @@ function skill() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-16  pl-2 items-center justify-self-center">
             <SkillCard
               title="Frontend Development"
-              items={["React", "Next.js", "TypeScript", "HTML/CSS"]}
+              items={["React", "Next.js", "TypeScript", "HTML/CSS","JavaScript"]}
             />
             <SkillCard
               title="Backend Development"
-              items={["Node.js", "Express", "Python", "Django"]}
+              items={["Node.js", "Express", "Python"]}
             />
             <SkillCard
               title="Database"
@@ -46,11 +46,11 @@ function skill() {
             />
             <SkillCard
               title="Mobile"
-              items={["React Native", "Flutter", "iOS", "Android"]}
+              items={["React Native", "iOS", "Android"]}
             />
             <SkillCard
               title="Other"
-              items={["GraphQL", "REST APIs", "WebSockets", "Microservices"]}
+              items={[ "REST APIs", "WebSockets", "Microservices"]}
             />
           </div>
         </div>
