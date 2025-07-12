@@ -1,14 +1,21 @@
-import { Award, Badge, Code, Mail, MapPin, Users } from "lucide-react";
+import { Award, Code, Mail, MapPin, Users } from "lucide-react";
+import { Badge } from "~/components/ui/badge";
 
 function about() {
   const skills = [
     "React",
     "Next.js",
     "TypeScript",
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "Express",
+    "Prisma",
     "Node.js",
     "Python",
     "Tailwind CSS",
     "Git",
+    "MySQL",
   ];
   return (
     <div className=" text-3xl">
@@ -63,10 +70,9 @@ function about() {
                 in building impactful web and mobile applications. With a strong
                 foundation in both frontend and backend development, I enjoy
                 turning complex problems into elegant, user-friendly solutions.
-                
               </p>
               <p className="text-lg leading-relaxed">
-              Beyond coding, I’m always exploring new technologies like React
+                Beyond coding, I’m always exploring new technologies like React
                 Native and microcontroller integrations. I believe in continuous
                 learning and enjoy contributing to the tech community by sharing
                 ideas, writing blogs, and supporting fellow developers.
@@ -79,12 +85,10 @@ function about() {
                   Technical Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {/*i dont understand the erro here? */}
-                  {skills.map((skill) => (
+                  {skills.map((skill, index) => (
                     <Badge
-                      key={skill}
-                      fontVariant={"secondary"}
-                      className="bg-gray-800  text-gray-200 "
+                      key={`${skill}-${index}`}
+                      className="bg-gray-800 text-gray-200 text-lg"
                     >
                       {skill}
                     </Badge>
