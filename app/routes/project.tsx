@@ -29,7 +29,7 @@ function Projects() {
       categoryColor: "bg-gray-600",
       description:
         "Resliders is a personal project I've been working on to 'scratch my own itch'.",
-      image: "/pictur.webp?height=300&width=400",
+      image: "/front.png?height=200&width=200",
       imageAlt: "Resliders component library interface",
     },
     {
