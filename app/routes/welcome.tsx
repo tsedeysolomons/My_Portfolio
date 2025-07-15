@@ -5,8 +5,8 @@ export default function Home() {
       <div className="min-h-screen  text-xl mr-0">
         <main className="flex flex-col items-center justify-center text-center px-4 py-20">
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Hi, I&apos;m Tsedey Solomon
-            <span className="block">Software Developer</span>
+            Hi, I&apos;m Tsedey Solomon Haylu
+            <span className="block"> I'M Software Developer</span>
           </h1>
 
           <p className="text-xl text-gray-400 mb-12 max-w-2xl">
@@ -18,7 +18,7 @@ export default function Home() {
               href="/contact"
               className="px-5 py-3 border border-gray-700  rounded-md font-bold flex items-center hover:bg-gray-500"
             >
-              Contact Me
+              Contact-Me
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="10"

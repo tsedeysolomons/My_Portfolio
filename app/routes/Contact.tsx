@@ -1,4 +1,4 @@
-import { Github, Link, Linkedin, Mail } from "lucide-react";
+import { Github, Link, Linkedin, Mail, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -85,6 +85,17 @@ function contact() {
                     className="text-3x1 hover:text-gray-300 transition-colors"
                   >
                     github.com/tsedeysolomon
+                  </a>
+                </div>
+                <div className="flex items-center gap-4">
+                  <X className="h-6 w-6 text-3x1" />
+                  <a
+                    href="https://x.com/TsedeySolomon"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-3x1 hover:text-gray-300 transition-colors"
+                  >
+                    X.com/TsedeySolomon
                   </a>
                 </div>
               </div>
