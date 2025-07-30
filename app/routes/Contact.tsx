@@ -1,5 +1,5 @@
 import { Github, Link, Linkedin, Mail, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
@@ -36,6 +36,14 @@ function contact() {
     setIsSubmitting(false);
   };
 
+  const [skills, setSkills] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/skills")
+      .then((res) => res.json())
+      .then(setSkills);
+  }, []);
+  
   return (
     <>
       <div className="min-h-screen  py-20">

@@ -1,7 +1,8 @@
+import { useEffect, useState } from "react";
 import SkillCard from "~/components/SkillCard";
 
 function skill() {
-  return (
+    return (
     <>
       <section id="skills" className="py-12 md:py-24 lg:py-32  ml-28 ">
         <div className="container px-6 md:px-6 items-center justify-center ">
