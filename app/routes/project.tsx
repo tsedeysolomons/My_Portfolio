@@ -14,31 +14,31 @@ function Projects() {
   const projects = [
     {
       id: 1,
-      title: "First Session",
-      category: "Contract Webflow Developer",
+      title: "Ethiopian Midr Babur E-Ticket System",
+      category: "web Application",
       categoryColor: "bg-yellow-400",
       description:
-        "I work on contract for First Session, specializing in Webflow development and integrating various",
+        "EMBE-T (Ethiopian Midr Babur E-Ticket) is a digital ticketing system designed to modernize public transportation in Ethiopia. The platform allows passengers to easily buy, store, and validate bus or train tickets using their mobile phones",
       image: "/image.png",
       imageAlt: "First Session therapist finder interface",
     },
     {
       id: 2,
-      title: "Resliders",
-      category: "Side Project",
-      categoryColor: "bg-gray-600",
+      title: "E-Combinator",
+      category: "Web Application",
+      categoryColor: "bg-green-500",
       description:
-        "Resliders is a personal project I've been working on to 'scratch my own itch'.",
-      image: "/front.png?height=200&width=200",
-      imageAlt: "Resliders component library interface",
+        "E-Combinator is an online platform that connects Ethiopian startups, innovators, and investors. It helps entrepreneurs share their business ideas, find mentors, and access funding opportunities.",
+      image: "/placeholder.svg?height=300&width=400",
+      imageAlt: "E-Combinator platform interface",
     },
     {
       id: 3,
-      title: "PassionSports.ca",
-      category: "Website Rebuild",
+      title: "MoodApp",
+      category: "Mobile Application ",
       categoryColor: "bg-cyan-500",
       description:
-        "One of the first Webflow sites person printing company, Passion Sports, that I",
+        "MoodApp is a mobile application that helps users track, understand, and improve their emotions",
       image: "/placeholder.svg?height=300&width=400",
       imageAlt: "PassionSports custom apparel website",
     },
@@ -89,13 +89,21 @@ function Projects() {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline" size="sm" asChild>
-            <Link target="_blank" rel="noopener noreferrer" to={""}>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              to={"https://github.com/tsedeysolomons/SkillSwap"}
+            >
               <Github className="mr-2 h-4 w-4" />
               Code
             </Link>
           </Button>
           <Button size="sm" asChild>
-            <Link target="_blank" rel="noopener noreferrer" to={""}>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              to={"https://github.com/tsedeysolomons/SkillSwap"}
+            >
               <ExternalLink className="mr-2 h-4 w-4" />
               Live Demo
             </Link>
@@ -179,12 +187,12 @@ function Projects() {
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-16">
             <ProjectCard
-              title="E-Commerce Platform"
-              description="A full-featured e-commerce platform built with Next.js, featuring product listings, cart functionality, user authentication, and payment processing."
+              title="SkillSwap Platform"
+              description="A skill-sharing platform built with React Native, allowing users to exchange skills and services through profiles, chat, and scheduling features.Next.js"
               image="/placeholder.svg?height=300&width=500"
-              tags={["Next.js", "TypeScript", "Stripe", "MongoDB"]}
-              demoLink="https://example.com"
-              repoLink="https://github.com/johndoe/ecommerce"
+              tags={["React Native", "Firebase", "Chat", "Scheduling"]}
+              demoLink="https://github.com/tsedeysolomons/SkillSwap"
+              repoLink="https://github.com/tsedeysolomons/SkillSwap"
             />
             <ProjectCard
               title="Microcontroller Weather Station"
