@@ -10,7 +10,35 @@ import {
 import { Badge } from "~/components/ui/badge";
 import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
 
+import { useEffect, useState } from "react";
+
+const iconMap: Record<string, React.ReactNode> = {
+  Code: <Code className="h-6 w-6" />,
+  Cpu: <Cpu className="h-6 w-6" />,
+  Wrench: <Wrench className="h-6 w-6" />,
+};
+
 export default function Experience() {
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/experience")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setExperiences(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching experience:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return "";
+    return new Date(dateStr).getFullYear().toString();
+  };
+
   return (
     <>
       <section id="experience" className="py-12 md:py-24 lg:py-32 ml-28">
@@ -27,87 +55,24 @@ export default function Experience() {
           </div>
 
           <div className="mt-16 space-y-8 justify-center">
-            {/* Web Development Experience */}
-            <ExperienceCard
-              icon={<Code className="h-6 w-6" />}
-              title="Web Developer"
-              company="Freelance & Personal Projects"
-              location="Remote"
-              period="2020 - Present"
-              type="Full-time"
-              description="Developed and maintained responsive web applications using modern technologies. Created user-friendly interfaces and implemented robust backend solutions for various clients and personal projects."
-              achievements={[
-                "Built 15+ responsive websites and web applications",
-                "Implemented modern frontend frameworks (React, Next.js)",
-                "Developed RESTful APIs and database integrations",
-                "Optimized website performance and SEO",
-                "Collaborated with clients to deliver custom solutions",
-              ]}
-              technologies={[
-                "React",
-                "Next.js",
-                "JavaScript",
-                "TypeScript",
-                "Node.js",
-                "HTML/CSS",
-                "MongoDB",
-                "PostgreSQL",
-              ]}
-            />
-
-            {/* Microprocessor Experience */}
-            <ExperienceCard
-              icon={<Cpu className="h-6 w-6" />}
-              title="Microprocessor Systems Developer"
-              company="Academic & Personal Projects"
-              location="University Lab"
-              period="2019 - 2022"
-              type="Academic"
-              description="Gained extensive hands-on experience with microprocessor systems, embedded programming, and hardware-software integration through coursework and independent projects."
-              achievements={[
-                "Programmed 8051 and ARM microcontrollers",
-                "Designed and implemented embedded systems",
-                "Developed assembly language programs",
-                "Created interfacing circuits for sensors and actuators",
-                "Built real-time control systems",
-              ]}
-              technologies={[
-                "Assembly Language",
-                "C Programming",
-                "8051 Microcontroller",
-                "ARM Cortex",
-                "Circuit Design",
-                "Embedded C",
-                "Hardware Debugging",
-              ]}
-            />
-
-            {/* PEDS Internship */}
-            <ExperienceCard
-              icon={<Wrench className="h-6 w-6" />}
-              title="ICT Support Intern"
-              company="PEDS (Point of Sale Systems)"
-              location="On-site"
-              period="2021 - 2022"
-              type="Internship"
-              description="Provided technical support for cash register machines and point-of-sale systems. Gained valuable experience in troubleshooting hardware issues, software configuration, and customer support in a retail technology environment."
-              achievements={[
-                "Troubleshot and repaired cash register systems",
-                "Configured POS software for various retail clients",
-                "Provided technical support to store operators",
-                "Maintained and updated system databases",
-                "Documented common issues and solutions",
-                "Assisted in system installations and upgrades",
-              ]}
-              technologies={[
-                "POS Systems",
-                "Cash Register Software",
-                "Hardware Troubleshooting",
-                "Database Management",
-                "Customer Support",
-                "System Configuration",
-              ]}
-            />
+            {loading ? (
+              <p className="text-center text-xl">Loading experience...</p>
+            ) : (
+              experiences.map((exp) => (
+                <ExperienceCard
+                  key={exp.id}
+                  icon={iconMap[exp.icon] || <Code className="h-6 w-6" />}
+                  title={exp.title}
+                  company={exp.company}
+                  location={exp.location}
+                  period={`${formatDate(exp.period_start)} - ${exp.period_end ? formatDate(exp.period_end) : "Present"}`}
+                  type={exp.employment_type}
+                  description={exp.description}
+                  achievements={exp.achievements || []}
+                  technologies={exp.technologies || []}
+                />
+              ))
+            )}
           </div>
         </div>
       </section>

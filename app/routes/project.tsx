@@ -10,39 +10,27 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
+import { useEffect, useState } from "react";
+
 function Projects() {
-  const projects = [
-    {
-      id: 1,
-      title: "Ethiopian Midr Babur E-Ticket System",
-      category: "web Application",
-      categoryColor: "bg-yellow-400",
-      description:
-        "EMBE-T (Ethiopian Midr Babur E-Ticket) is a digital ticketing system designed to modernize public transportation in Ethiopia. The platform allows passengers to easily buy, store, and validate bus or train tickets using their mobile phones",
-      image: "/image.png",
-      imageAlt: "First Session therapist finder interface",
-    },
-    {
-      id: 2,
-      title: "E-Combinator",
-      category: "Web Application",
-      categoryColor: "bg-green-500",
-      description:
-        "E-Combinator is an online platform that connects Ethiopian startups, innovators, and investors. It helps entrepreneurs share their business ideas, find mentors, and access funding opportunities.",
-      image: "/placeholder.svg?height=300&width=400",
-      imageAlt: "E-Combinator platform interface",
-    },
-    {
-      id: 3,
-      title: "MoodApp",
-      category: "Mobile Application ",
-      categoryColor: "bg-cyan-500",
-      description:
-        "MoodApp is a mobile application that helps users track, understand, and improve their emotions",
-      image: "/placeholder.svg?height=300&width=400",
-      imageAlt: "PassionSports custom apparel website",
-    },
-  ];
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProjects(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching projects:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const featuredProjects = projects.filter((p) => p.featured);
+  const regularProjects = projects.filter((p) => !p.featured);
+
   function ProjectCard({
     title,
     description,
@@ -73,7 +61,7 @@ function Projects() {
           <CardTitle>{title}</CardTitle>
           <CardDescription>
             <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag, index) => (
+              {(tags || []).map((tag, index) => (
                 <span
                   key={index}
                   className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary"
@@ -85,33 +73,38 @@ function Projects() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">{description}</p>
+          <p className="text-muted-foreground line-clamp-3">{description}</p>
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline" size="sm" asChild>
-            <Link
+            <a
               target="_blank"
               rel="noopener noreferrer"
-              to={"https://github.com/tsedeysolomons/SkillSwap"}
+              href={repoLink || "#"}
             >
               <Github className="mr-2 h-4 w-4" />
               Code
-            </Link>
+            </a>
           </Button>
           <Button size="sm" asChild>
-            <Link
+            <a
               target="_blank"
               rel="noopener noreferrer"
-              to={"https://github.com/tsedeysolomons/SkillSwap"}
+              href={demoLink || "#"}
             >
               <ExternalLink className="mr-2 h-4 w-4" />
               Live Demo
-            </Link>
+            </a>
           </Button>
         </CardFooter>
       </Card>
     );
   }
+
+  if (loading) {
+    return <div className="min-h-screen pt-20 text-center text-2xl">Loading projects...</div>;
+  }
+
   return (
     <>
       <div className="min-h-screen px-6 py-12 lg:px-12 lg:py-16">
@@ -134,45 +127,50 @@ function Projects() {
 
           {/* Projects Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16">
-            {projects.map((project) => (
-              <div
-                key={project.id}
-                className="bg-white rounded-2xl overflow-hidden shadow-lg"
-              >
-                {/* Project Image */}
-                <div className="aspect-[4/3] relative">
-                  <img
-                    src={project.image || "/tsedeypic.jpg"}
-                    alt={project.imageAlt}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-
-                {/* Project Content */}
-                <div className="p-6">
-                  {/* Category Tag */}
-                  <div
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-black mb-4 ${project.categoryColor}`}
-                  >
-                    {project.category}
+            {regularProjects.length > 0 ? (
+              regularProjects.map((project) => (
+                <div
+                  key={project.id}
+                  className="bg-white rounded-2xl overflow-hidden shadow-lg h-full"
+                >
+                  {/* Project Image */}
+                  <div className="aspect-[4/3] relative">
+                    <img
+                      src={project.image_url || "/placeholder.svg"}
+                      alt={project.title}
+                      className="object-cover w-full h-full"
+                    />
                   </div>
 
-                  {/* Project Title */}
-                  <h3 className="text-2xl font-bold text-black mb-3">
-                    {project.title}
-                  </h3>
+                  {/* Project Content */}
+                  <div className="p-6">
+                    {/* Category Tag */}
+                    <div
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-black mb-4 bg-yellow-400`}
+                    >
+                      {project.category || "Development"}
+                    </div>
 
-                  {/* Project Description */}
-                  <p className="text-gray-700 leading-relaxed">
-                    {project.description}
-                  </p>
+                    {/* Project Title */}
+                    <h3 className="text-2xl font-bold text-black mb-3">
+                      {project.title}
+                    </h3>
+
+                    {/* Project Description */}
+                    <p className="text-gray-700 leading-relaxed line-clamp-4">
+                      {project.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-xl">No current projects found.</p>
+            )}
           </div>
         </div>
       </div>
-      {/* Projects Section */}
+
+      {/* Featured Projects Section */}
       <section id="projects" className="py-12 md:py-24 lg:py-32 ml-20">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
@@ -186,59 +184,17 @@ function Projects() {
             </div>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-16">
-            <ProjectCard
-              title="SkillSwap Platform"
-              description="A skill-sharing platform built with React Native, allowing users to exchange skills and services through profiles, chat, and scheduling features.Next.js"
-              image="/placeholder.svg?height=300&width=500"
-              tags={["React Native", "Firebase", "Chat", "Scheduling"]}
-              demoLink="https://github.com/tsedeysolomons/SkillSwap"
-              repoLink="https://github.com/tsedeysolomons/SkillSwap"
-            />
-            <ProjectCard
-              title="Microcontroller Weather Station"
-              description="An embedded weather monitoring system using ARM microcontroller with sensors for temperature, humidity, and pressure data collection."
-              image="/placeholder.svg?height=300&width=500"
-              tags={[
-                "ARM Cortex",
-                "Embedded C",
-                "Sensors",
-                "Real-time Systems",
-              ]}
-              demoLink="https://example.com"
-              repoLink="https://github.com/johndoe/weather-station"
-            />
-            <ProjectCard
-              title="POS System Dashboard"
-              description="A web-based dashboard for monitoring and managing point-of-sale systems, built during my experience with cash register maintenance."
-              image="/placeholder.svg?height=300&width=500"
-              tags={["React", "Node.js", "Real-time Data", "System Monitoring"]}
-              demoLink="https://example.com"
-              repoLink="https://github.com/johndoe/pos-dashboard"
-            />
-            <ProjectCard
-              title="Task Management App"
-              description="A collaborative task management application with real-time updates, drag-and-drop functionality, and team collaboration features."
-              image="/placeholder.svg?height=300&width=500"
-              tags={["React", "Node.js", "Socket.io", "PostgreSQL"]}
-              demoLink="https://example.com"
-              repoLink="https://github.com/johndoe/taskmanager"
-            />
-            <ProjectCard
-              title="Home Automation System"
-              description="An IoT-based home automation system using microcontrollers to control lights, temperature, and security systems remotely."
-              image="/placeholder.svg?height=300&width=500"
-              tags={["IoT", "8051", "Web Interface", "Remote Control"]}
-              demoLink="https://example.com"
-              repoLink="https://github.com/johndoe/home-automation"
-            />
-            <ProjectCard
-              title="Blog Platform"
-              description="A content management system for bloggers with markdown support, image uploads, SEO optimization, and analytics."
-              image="/placeholder.svg?height=300&width=500"
-              tags={["Next.js", "Sanity CMS", "Tailwind CSS", "Vercel"]}
-              demoLink="https://example.com"
-              repoLink="https://github.com/johndoe/blog"
-            />
+            {featuredProjects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                title={project.title}
+                description={project.description}
+                image={project.image_url}
+                tags={project.tags}
+                demoLink={project.demo_link}
+                repoLink={project.repo_link}
+              />
+            ))}
           </div>
         </div>
       </section>
