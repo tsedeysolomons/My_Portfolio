@@ -1,60 +1,116 @@
 import { useEffect, useState } from "react";
-import SkillCard from "~/components/SkillCard";
+import { motion } from "framer-motion";
+import { Cpu, Globe, Database, Layout } from "lucide-react";
 
-function skill() {
-  const [skills, setSkills] = useState<any[]>([]);
+interface Skill {
+  id: number;
+  category: string;
+  name: string;
+  proficiency_level: string;
+}
+
+export default function Skill() {
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/skills")
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          // Group by category
-          const grouped = data.data.reduce((acc: any, skill: any) => {
-            if (!acc[skill.category]) acc[skill.category] = [];
-            acc[skill.category].push(skill.name);
-            return acc;
-          }, {});
-          setSkills(Object.entries(grouped));
-        }
+      .then((json) => {
+        setSkills(json.data);
+        setLoading(false);
       })
-      .catch(err => console.error("Error fetching skills:", err))
-      .finally(() => setLoading(false));
+      .catch((err) => console.error("Error fetching skills:", err));
   }, []);
 
+  const categories = Array.from(new Set(skills.map((s) => s.category)));
+
+  const getIcon = (cat: string) => {
+    switch (cat.toLowerCase()) {
+      case 'frontend development': return <Globe size={20} />;
+      case 'backend development': return <Database size={20} />;
+      case 'mobile development': return <Cpu size={20} />;
+      default: return <Layout size={20} />;
+    }
+  };
+
+  const containerVars = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVars = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <>
-      <section id="skills" className="py-12 md:py-24 lg:py-32  ml-28 ">
-        <div className="container px-6 md:px-6 items-center justify-center ">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl ">
-                Skills & Technologie
-              </h2>
-              <p className="max-w-[700px] text-3xl md:text-xl">
-                These are the core technologies, frameworks, and tools I rely on
-                to design, develop, and deploy robust web and mobile
-                applications.
-              </p>
+    <div className="py-24 px-6 max-w-7xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-20"
+      >
+        <h2 className="text-4xl md:text-6xl font-black mb-6">Technical Arsenal</h2>
+        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+          A comprehensive overview of my tech stack, specialized in building scalable and performant applications.
+        </p>
+      </motion.div>
+
+      <div className="grid gap-16">
+        {categories.map((cat, idx) => (
+          <motion.section 
+            key={cat}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={containerVars}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-3 rounded-2xl bg-brand-500/10 text-brand-500">
+                {getIcon(cat)}
+              </div>
+              <h3 className="text-2xl font-bold tracking-tight">{cat}</h3>
+              <div className="flex-1 h-px bg-gradient-to-r from-gray-200/20 to-transparent" />
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-16  pl-2 items-center justify-self-center">
-            {loading ? (
-              <p>Loading skills...</p>
-            ) : (
-              skills.map(([category, items]) => (
-                <SkillCard
-                  key={category}
-                  title={category}
-                  items={items}
-                />
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-    </>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {skills
+                .filter((s) => s.category === cat)
+                .map((skill) => (
+                  <motion.div
+                    key={skill.id}
+                    variants={itemVars}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="glass-card p-6 flex flex-col items-center text-center group"
+                  >
+                    <div className="w-12 h-12 mb-4 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center transition-colors group-hover:bg-brand-500/20">
+                      <span className="text-xl font-bold text-brand-500">{skill.name[0]}</span>
+                    </div>
+                    <h4 className="font-bold text-sm uppercase tracking-widest text-gray-900 dark:text-white mb-1">
+                      {skill.name}
+                    </h4>
+                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                      {skill.proficiency_level}
+                    </span>
+                  </motion.div>
+                ))}
+            </div>
+          </motion.section>
+        ))}
+      </div>
+    </div>
   );
 }
-export default skill;

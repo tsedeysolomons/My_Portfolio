@@ -11,12 +11,13 @@ export default function AppLayout() {
     document.documentElement.classList.toggle("dark");
   };
   return (
-    <>
+    <div className="relative min-h-screen">
+      <div className="bg-mesh" />
       <Header onToggle={handleToggle} />
-      <main>
+      <main className="relative z-10">
         <Outlet />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

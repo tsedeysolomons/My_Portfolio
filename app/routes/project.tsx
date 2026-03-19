@@ -1,204 +1,158 @@
-import { ExternalLink, Github } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ExternalLink, Github, Code, Layers, Sparkles } from "lucide-react";
 
-function Projects() {
-  const [projects, setProjects] = useState<any[]>([]);
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string;
+  category: string;
+  tags: string[];
+  demo_link: string;
+  repo_link: string;
+  featured: boolean;
+}
+
+export default function Projects() {
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     fetch("http://localhost:5000/api/projects")
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setProjects(data.data);
-        }
+      .then((json) => {
+        setProjects(json.data);
+        setLoading(false);
       })
-      .catch((err) => console.error("Error fetching projects:", err))
-      .finally(() => setLoading(false));
+      .catch((err) => console.error("Error fetching projects:", err));
   }, []);
 
-  const featuredProjects = projects.filter((p) => p.featured);
-  const regularProjects = projects.filter((p) => !p.featured);
+  const categories = ["all", ...Array.from(new Set(projects.map((p) => p.category || "Development"))).filter(Boolean)];
+  const filteredProjects = filter === "all" ? projects : projects.filter(p => (p.category || "Development") === filter);
 
-  function ProjectCard({
-    title,
-    description,
-    image,
-    tags,
-    demoLink,
-    repoLink,
-  }: {
-    title: string;
-    description: string;
-    image: string;
-    tags: string[];
-    demoLink: string;
-    repoLink: string;
-  }) {
+  if (loading) {
     return (
-      <Card className="overflow-hidden">
-        <div className="aspect-video w-full overflow-hidden">
-          <img
-            src={image || "/placeholder.svg"}
-            alt={title}
-            width={500}
-            height={300}
-            className="h-full w-full object-cover transition-all hover:scale-105"
-          />
-        </div>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {(tags || []).map((tag, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground line-clamp-3">{description}</p>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline" size="sm" asChild>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href={repoLink || "#"}
-            >
-              <Github className="mr-2 h-4 w-4" />
-              Code
-            </a>
-          </Button>
-          <Button size="sm" asChild>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href={demoLink || "#"}
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Live Demo
-            </a>
-          </Button>
-        </CardFooter>
-      </Card>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+      </div>
     );
   }
 
-  if (loading) {
-    return <div className="min-h-screen pt-20 text-center text-2xl">Loading projects...</div>;
-  }
-
   return (
-    <>
-      <div className="min-h-screen px-6 py-12 lg:px-12 lg:py-16">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex justify-between items-start mb-8">
-            <div className="max-w-4xl">
-              <h1 className="text-5xl  lg:text-6xl font-bold  mb-8">
-                Current Projects
-              </h1>
-              <p className="text-lg lg:text-xl leading-relaxed">
-                I'm keeping this section updated with a selection of the
-                projects I am currently tackling as a web designer and digital
-                designer. From website overhauls to business automation systems
-                to side projects, this will offer a glimpse into my current
-                daily work and the type of projects I am currently focused on.
-              </p>
-            </div>
-          </div>
-
-          {/* Projects Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16">
-            {regularProjects.length > 0 ? (
-              regularProjects.map((project) => (
-                <div
-                  key={project.id}
-                  className="bg-white rounded-2xl overflow-hidden shadow-lg h-full"
-                >
-                  {/* Project Image */}
-                  <div className="aspect-[4/3] relative">
-                    <img
-                      src={project.image_url || "/placeholder.svg"}
-                      alt={project.title}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-
-                  {/* Project Content */}
-                  <div className="p-6">
-                    {/* Category Tag */}
-                    <div
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-black mb-4 bg-yellow-400`}
-                    >
-                      {project.category || "Development"}
-                    </div>
-
-                    {/* Project Title */}
-                    <h3 className="text-2xl font-bold text-black mb-3">
-                      {project.title}
-                    </h3>
-
-                    {/* Project Description */}
-                    <p className="text-gray-700 leading-relaxed line-clamp-4">
-                      {project.description}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-xl">No current projects found.</p>
-            )}
-          </div>
+    <div className="py-24 px-6 max-w-7xl mx-auto min-h-screen">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-16"
+      >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-sm font-semibold mb-6">
+          <Sparkles size={14} />
+          <span>My Portfolio</span>
         </div>
+        <h2 className="text-4xl md:text-7xl font-black mb-6 tracking-tight">Recent <span className="text-brand-500">Works</span></h2>
+        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+          From full-stack applications to intricate user interfaces, here's a selection of projects that showcase my passion for design and engineering.
+        </p>
+      </motion.div>
+
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setFilter(cat)}
+            className={`px-6 py-2 rounded-full text-sm font-bold capitalize transition-all ${
+              filter === cat 
+              ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" 
+              : "bg-gray-100 dark:bg-white/5 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
-      {/* Featured Projects Section */}
-      <section id="projects" className="py-12 md:py-24 lg:py-32 ml-20">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Featured Projects
-              </h2>
-              <p className="max-w-[700px] text-muted-foreground md:text-xl">
-                A selection of my recent work and personal projects
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-16">
-            {featuredProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                title={project.title}
-                description={project.description}
-                image={project.image_url}
-                tags={project.tags}
-                demoLink={project.demo_link}
-                repoLink={project.repo_link}
-              />
-            ))}
-          </div>
+      <motion.div 
+        layout
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
+        <AnimatePresence mode="popLayout">
+          {filteredProjects.map((project) => (
+            <motion.div
+              layout
+              key={project.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -10 }}
+              className="glass-card flex flex-col group h-full"
+            >
+              {/* Image Container */}
+              <div className="aspect-video relative overflow-hidden">
+                <img
+                  src={project.image_url || "/placeholder.svg"}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <div className="flex gap-3 w-full">
+                    <a 
+                      href={project.repo_link} 
+                      target="_blank" 
+                      className="flex-1 btn-primary !h-10 text-xs gap-2"
+                    >
+                      <Github size={14} /> Code
+                    </a>
+                    <a 
+                      href={project.demo_link} 
+                      target="_blank" 
+                      className="flex-1 btn-outline !h-10 !bg-white/10 !backdrop-blur-md !border-white/20 text-xs gap-2 text-white"
+                    >
+                      <ExternalLink size={14} /> Live
+                    </a>
+                  </div>
+                </div>
+                {project.featured && (
+                  <div className="absolute top-4 right-4 px-3 py-1 bg-brand-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                    Featured
+                  </div>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="p-8 flex-1 flex flex-col">
+                <div className="flex items-center gap-2 text-brand-500 mb-3">
+                  <Layers size={14} />
+                  <span className="text-xs font-bold uppercase tracking-widest">{project.category || "Development"}</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 group-hover:text-brand-500 transition-colors">
+                  {project.title}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3">
+                  {project.description}
+                </p>
+                <div className="mt-auto flex flex-wrap gap-2">
+                  {project.tags?.map((tag, i) => (
+                    <span key={i} className="text-[10px] font-bold px-2 py-1 rounded bg-gray-100 dark:bg-white/5 text-gray-400 group-hover:text-brand-500 transition-colors">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {filteredProjects.length === 0 && (
+        <div className="text-center py-20">
+          <p className="text-gray-500">No projects found for this category.</p>
         </div>
-      </section>
-    </>
+      )}
+    </div>
   );
 }
-export default Projects;

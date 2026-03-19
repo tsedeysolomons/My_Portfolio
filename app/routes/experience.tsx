@@ -1,37 +1,33 @@
-import type React from "react";
-import { Calendar, MapPin, Building, Code, Cpu, Wrench } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Badge } from "~/components/ui/badge";
-import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
-
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Calendar, MapPin, Building2, Briefcase, GraduationCap, Trophy } from "lucide-react";
 
-const iconMap: Record<string, React.ReactNode> = {
-  Code: <Code className="h-6 w-6" />,
-  Cpu: <Cpu className="h-6 w-6" />,
-  Wrench: <Wrench className="h-6 w-6" />,
-};
+interface Experience {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  period_start: string;
+  period_end: string | null;
+  employment_type: string;
+  description: string;
+  achievements: string[];
+  technologies: string[];
+  icon: string;
+}
 
 export default function Experience() {
-  const [experiences, setExperiences] = useState<any[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/experience")
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setExperiences(data.data);
-        }
+      .then((json) => {
+        setExperiences(json.data);
+        setLoading(false);
       })
-      .catch((err) => console.error("Error fetching experience:", err))
-      .finally(() => setLoading(false));
+      .catch((err) => console.error("Error fetching experience:", err));
   }, []);
 
   const formatDate = (dateStr: string) => {
@@ -39,130 +35,111 @@ export default function Experience() {
     return new Date(dateStr).getFullYear().toString();
   };
 
-  return (
-    <>
-      <section id="experience" className="py-12 md:py-24 lg:py-32 ml-28">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl ">
-                Experience
-              </h2>
-              <p className="max-w-[700px] text-muted-foreground md:text-xl">
-                My professional journey and hands-on experience in technology
-              </p>
-            </div>
-          </div>
+  const getIcon = (type: string) => {
+    if (type.toLowerCase().includes('education')) return <GraduationCap size={20} />;
+    if (type.toLowerCase().includes('award')) return <Trophy size={20} />;
+    return <Briefcase size={20} />;
+  };
 
-          <div className="mt-16 space-y-8 justify-center">
-            {loading ? (
-              <p className="text-center text-xl">Loading experience...</p>
-            ) : (
-              experiences.map((exp) => (
-                <ExperienceCard
-                  key={exp.id}
-                  icon={iconMap[exp.icon] || <Code className="h-6 w-6" />}
-                  title={exp.title}
-                  company={exp.company}
-                  location={exp.location}
-                  period={`${formatDate(exp.period_start)} - ${exp.period_end ? formatDate(exp.period_end) : "Present"}`}
-                  type={exp.employment_type}
-                  description={exp.description}
-                  achievements={exp.achievements || []}
-                  technologies={exp.technologies || []}
-                />
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
-function ExperienceCard({
-  icon,
-  title,
-  company,
-  location,
-  period,
-  type,
-  description,
-  achievements,
-  technologies,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  company: string;
-  location: string;
-  period: string;
-  type: string;
-  description: string;
-  achievements: string[];
-  technologies: string[];
-}) {
   return (
-    <Card className="relative overflow-hidden">
-      <div className="absolute left-0 top-0 h-full w-1 bg-primary" />
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              {icon}
-            </div>
-            <div>
-              <CardTitle className="text-xl">{title}</CardTitle>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Building className="h-4 w-4" />
-                <span>{company}</span>
+    <div className="py-24 px-6 max-w-5xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-20"
+      >
+        <h2 className="text-4xl md:text-7xl font-black mb-6 tracking-tight">Professional <span className="text-brand-500">Journey</span></h2>
+        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          Tracing my path through software engineering, from academic foundations to industry-leading projects.
+        </p>
+      </motion.div>
+
+      <div className="relative space-y-12 before:absolute before:inset-y-0 before:left-0 md:before:left-1/2 before:w-[2px] before:bg-gradient-to-b before:from-brand-500/50 before:via-gray-200/20 before:to-transparent">
+        {experiences.map((exp, idx) => (
+          <motion.div
+            key={exp.id}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className={`relative flex flex-col md:flex-row gap-8 ${idx % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+          >
+            {/* Timeline dot */}
+            <div className="absolute left-[-9px] md:left-1/2 md:ml-[-9px] top-0 w-5 h-5 rounded-full bg-brand-500 border-4 border-background z-20 shadow-lg shadow-brand-500/50" />
+
+            {/* Content Side */}
+            <div className="md:w-1/2 ml-8 md:ml-0">
+              <div className="glass-card p-8 group hover:bg-brand-500/5 border-brand-500/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 mr-1 rounded-lg bg-brand-500/10 text-brand-500 group-hover:scale-110 transition-transform">
+                    {getIcon(exp.employment_type)}
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors">
+                      {exp.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
+                      <Building2 size={14} />
+                      {exp.company}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4 text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 border-b border-gray-200/10 pb-4">
+                  <div className="flex items-center gap-1">
+                    <Calendar size={12} />
+                    {formatDate(exp.period_start)} — {exp.period_end ? formatDate(exp.period_end) : "Present"}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MapPin size={12} />
+                    {exp.location}
+                  </div>
+                  <div className="px-2 py-0.5 rounded bg-brand-500/10 text-brand-500">
+                    {exp.employment_type}
+                  </div>
+                </div>
+
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6">
+                  {exp.description}
+                </p>
+
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Key Results</h4>
+                  <ul className="grid gap-2">
+                    {exp.achievements?.map((ach, i) => (
+                      <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                        <span className="mt-1.5 w-1 h-1 rounded-full bg-brand-500 shrink-0" />
+                        {ach}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {exp.technologies?.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-gray-200/10 flex flex-wrap gap-2">
+                    {exp.technologies.map((tech, i) => (
+                      <span key={i} className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded bg-gray-100 dark:bg-white/5 text-gray-400 group-hover:text-brand-500 transition-colors">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-          <Badge variant="secondary">{type}</Badge>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            <span>{period}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <MapPin className="h-4 w-4" />
-            <span>{location}</span>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
-        <CardDescription className="text-base leading-relaxed">
-          {description}
-        </CardDescription>
-
-        <div>
-          <h4 className="mb-3 font-semibold">
-            Key Achievements & Responsibilities:
-          </h4>
-          <ul className="space-y-2">
-            {achievements.map((achievement, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <div className="mt-2 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                <span className="text-muted-foreground">{achievement}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="mb-3 font-semibold">Technologies & Tools:</h4>
-          <div className="flex flex-wrap gap-2">
-            {technologies.map((tech, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {tech}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+            {/* Empty space for alternate side */}
+            <div className="hidden md:block md:w-1/2" />
+          </motion.div>
+        ))}
+      </div>
+    </div>
   );
 }

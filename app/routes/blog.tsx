@@ -1,356 +1,236 @@
 import { useEffect, useState } from "react";
-import {
-  Search,
-  Calendar,
-  Clock,
-  User,
-  Tag,
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Search, Calendar, Clock, User, Tag, ArrowRight, 
+  ChevronLeft, ChevronRight, BookOpen, Newspaper 
 } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Badge } from "~/components/ui/badge";
+interface Post {
+  id: number;
+  title: string;
+  excerpt: string;
+  category: string;
+  content: string;
+  author: string;
+  published_date: string;
+  read_time: string;
+  tags: string[];
+  featured: boolean;
+}
 
-const categories = [
-  "All",
-  "Web Development",
-  "Embedded Systems",
-  "Career",
-  "Python",
-  "Backend",
-];
+const categories = ["All", "Web Development", "Embedded Systems", "Career", "Python", "Backend"];
 
-export default function blog() {
-  const [selectedPost, setSelectedPost] = useState<any>(null);
+export default function Blog() {
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const [posts, setPosts] = useState<any[]>([]);
-  const [featuredPosts, setFeaturedPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 0 });
   const [loading, setLoading] = useState(true);
 
-  // Fetch featured posts once
   useEffect(() => {
     fetch("http://localhost:5000/api/blog/featured")
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setFeaturedPosts(data.data);
-      })
-      .catch((err) => console.error("Error fetching featured posts:", err));
+      .then((json) => setFeaturedPosts(json.data || []));
   }, []);
 
-  // Fetch paginated/filtered posts
   useEffect(() => {
     setLoading(true);
     const params = new URLSearchParams({
       page: currentPage.toString(),
-      limit: "4",
+      limit: "6",
       search: searchTerm,
-      category: selectedCategory,
+      category: selectedCategory === "All" ? "" : selectedCategory,
     });
 
     fetch(`http://localhost:5000/api/blog?${params}`)
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setPosts(data.data);
-          setPagination(data.pagination);
-        }
+      .then((json) => {
+        setPosts(json.data || []);
+        setPagination(json.pagination);
+        setLoading(false);
       })
-      .catch((err) => console.error("Error fetching blog posts:", err))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        console.error("Error fetching posts:", err);
+        setLoading(false);
+      });
   }, [searchTerm, selectedCategory, currentPage]);
 
   const handlePostClick = (postId: number) => {
     fetch(`http://localhost:5000/api/blog/${postId}`)
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setSelectedPost(data.data);
-      })
+      .then((json) => setSelectedPost(json.data))
       .catch((err) => console.error("Error fetching post details:", err));
   };
 
   if (selectedPost) {
     return (
-      <div className="min-h-screen ">
-        <div className="container py-8">
-          <Button
-            variant="ghost"
-            onClick={() => setSelectedPost(null)}
-            className="mb-6"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to Blog
-          </Button>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="py-12 px-6 max-w-4xl mx-auto"
+      >
+        <button
+          onClick={() => setSelectedPost(null)}
+          className="btn-outline !h-10 !px-4 mb-12 gap-2"
+        >
+          <ChevronLeft size={16} />
+          Back to feed
+        </button>
 
-          <article className="max-w-4xl mx-auto">
-            <div className="mb-6">
-              <Badge variant="secondary" className="mb-4">
-                {selectedPost.category}
-              </Badge>
-              <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                {selectedPost.title}
-              </h1>
+        <article className="glass-card p-8 md:p-12">
+          <header className="mb-12">
+            <div className="flex items-center gap-2 text-brand-500 mb-6 px-3 py-1 bg-brand-500/10 rounded-full w-fit text-xs font-bold uppercase tracking-widest">
+              <Newspaper size={14} />
+              {selectedPost.category}
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tight">
+              {selectedPost.title}
+            </h1>
 
-              <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6 ml-20">
-                <div className="flex items-center gap-1">
-                  <User className="h-4 w-4" />
-                  <span>{selectedPost.author}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{new Date(selectedPost.published_date).toLocaleDateString()}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{selectedPost.read_time}</span>
-                </div>
+            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-400 font-medium">
+              <div className="flex items-center gap-2">
+                <User size={16} className="text-brand-500" />
+                {selectedPost.author}
               </div>
-
-              <div className="flex flex-wrap gap-2 mb-8">
-                {(selectedPost.tags || []).map((tag: string, index: number) => (
-                  <Badge key={index} variant="outline">
-                    <Tag className="mr-1 h-3 w-3" />
-                    {tag}
-                  </Badge>
-                ))}
+              <div className="flex items-center gap-2">
+                <Calendar size={16} className="text-brand-500" />
+                {new Date(selectedPost.published_date).toLocaleDateString()}
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock size={16} className="text-brand-500" />
+                {selectedPost.read_time}
               </div>
             </div>
+          </header>
 
-            <div className="prose prose-lg max-w-none">
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: selectedPost.content.replace(/\n/g, "<br />"),
-                }}
-              />
-            </div>
-          </article>
-        </div>
-      </div>
+          <div className="prose prose-invert prose-brand max-w-none text-gray-500 dark:text-gray-400 leading-relaxed text-lg">
+             <div dangerouslySetInnerHTML={{ __html: selectedPost.content.replace(/\n/g, "<br />") }} />
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-gray-200/10 flex flex-wrap gap-2">
+            {selectedPost.tags?.map((tag, i) => (
+              <span key={i} className="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-400 text-xs font-bold">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </article>
+      </motion.div>
     );
   }
 
   return (
-    <div className="min-h-screen ml-24 ">
-      <div className="container py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4">Blog</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Thoughts, tutorials, and insights about web development, embedded
-            systems, and technology
-          </p>
+    <div className="py-24 px-6 max-w-7xl mx-auto min-h-screen">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-16"
+      >
+        <h2 className="text-4xl md:text-7xl font-black mb-6 tracking-tight">Inside My <span className="text-brand-500">Mind</span></h2>
+        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          Sharing knowledge, building tutorials, and exploring the intersection of design and deep tech.
+        </p>
+      </motion.div>
+
+      {/* Toolbar */}
+      <div className="flex flex-col md:flex-row items-center gap-6 mb-16 px-6 py-4 glass rounded-3xl border border-brand-500/10">
+        <div className="relative flex-1 group w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 transition-colors" size={18} />
+          <input 
+            placeholder="Search for articles..."
+            className="w-full h-12 pl-12 pr-4 bg-transparent outline-none font-medium placeholder:text-gray-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-
-        {/* Featured Posts */}
-        {featuredPosts.length > 0 && !searchTerm && selectedCategory === "All" && (
-          <section className="mb-12 ml-16">
-            <h2 className="text-2xl font-bold mb-6">Featured Posts</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {featuredPosts.map((post) => (
-                <Card
-                  key={post.id}
-                  className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => handlePostClick(post.id)}
-                >
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="secondary">{post.category}</Badge>
-                      <Badge variant="outline">Featured</Badge>
-                    </div>
-                    <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                    <CardDescription className="line-clamp-3">
-                      {post.excerpt}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {new Date(post.published_date).toLocaleDateString()}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {post.read_time}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {(post.tags || []).slice(0, 3).map((tag: string, index: number) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="text-xs"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-between"
-                    >
-                      Read More
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Search and Filter */}
-        <div className="mb-8 ml-16">
-          <div className="flex flex-col md:flex-row gap-6 mb-6">
-            <div className="relative flex-1 ">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-6 text-muted-foreground" />
-              <Input
-                placeholder="Search posts..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="pl-12"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2 ml-10 ">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  setSelectedCategory(category);
-                  setCurrentPage(1);
-                }}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        {/* Blog Posts Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8 ml-16">
-          {loading ? (
-            <p>Loading posts...</p>
-          ) : (
-            posts.map((post) => (
-              <Card
-                key={post.id}
-                className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => handlePostClick(post.id)}
-              >
-                <CardHeader>
-                  <Badge variant="secondary" className="w-fit mb-2">
-                    {post.category}
-                  </Badge>
-                  <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {post.excerpt}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(post.published_date).toLocaleDateString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {post.read_time}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {(post.tags || []).slice(0, 3).map((tag: string, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between"
-                  >
-                    Read More
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
-
-        {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+        <div className="flex flex-wrap justify-center gap-2">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                selectedCategory === cat ? "bg-brand-500 text-white shadow-lg shadow-brand-500/20" : "hover:bg-brand-500/10 text-gray-500"
+              }`}
             >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-
-            <div className="flex gap-1">
-              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </Button>
-                )
-              )}
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, pagination.totalPages))
-              }
-              disabled={currentPage === pagination.totalPages}
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-
-        {/* No Results */}
-        {!loading && posts.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">No posts found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your search terms or category filter.
-            </p>
-          </div>
-        )}
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <AnimatePresence mode="popLayout">
+          {posts.map((post, idx) => (
+            <motion.div
+              layout
+              key={post.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: idx * 0.05 }}
+              whileHover={{ y: -8 }}
+              onClick={() => handlePostClick(post.id)}
+              className="glass-card p-8 flex flex-col cursor-pointer group"
+            >
+              <div className="flex items-center gap-2 text-brand-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                <BookOpen size={12} />
+                {post.category}
+              </div>
+              <h3 className="text-2xl font-bold mb-4 group-hover:text-brand-500 transition-colors leading-tight">
+                {post.title}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8 line-clamp-3">
+                {post.excerpt}
+              </p>
+              <div className="mt-auto flex items-center justify-between">
+                <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <div className="flex items-center gap-1">
+                    <Calendar size={10} />
+                    {new Date(post.published_date).toLocaleDateString()}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock size={10} />
+                    {post.read_time}
+                  </div>
+                </div>
+                <div className="p-2 rounded-full bg-brand-500/10 text-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all">
+                  <ArrowRight size={14} />
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Simplified Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="mt-20 flex justify-center gap-4">
+          <button 
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => p - 1)}
+            className="btn-outline !h-12 !px-6 gap-2"
+          >
+            <ChevronLeft size={18} /> Prev
+          </button>
+          <button 
+            disabled={currentPage === pagination.totalPages}
+            onClick={() => setCurrentPage(p => p + 1)}
+            className="btn-primary !h-12 !px-6 gap-2"
+          >
+            Next <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
+
+      {posts.length === 0 && !loading && (
+        <div className="text-center py-20 bg-gray-50/50 dark:bg-white/5 rounded-3xl border border-dashed border-gray-200 dark:border-white/10">
+          <p className="text-gray-500 font-medium">No articles found matching your criteria.</p>
+        </div>
+      )}
     </div>
   );
 }
