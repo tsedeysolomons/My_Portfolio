@@ -4,12 +4,13 @@ import Footer from "./Footer";
 import { useState } from "react";
 // AppLayout.tsx
 export default function AppLayout() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
+
   const handleToggle = () => {
     setDark((prev) => !prev);
-    // Optionally, add logic to toggle dark mode class on <html> or <body>
     document.documentElement.classList.toggle("dark");
   };
+
   return (
     <div className="relative min-h-screen selection:bg-brand-500/30">
       {/* High-Energy Animated Background */}

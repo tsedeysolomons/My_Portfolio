@@ -23,8 +23,8 @@ export default function About() {
 
   const stats = [
     { label: "Projects Completed", value: "10+", color: "text-brand-500" },
-    { label: "Years Experience", value: "2+", color: "text-pink-500" },
-    { label: "Code Commits", value: "1.2k", color: "text-amber-500" },
+    { label: "Years Experience", value: "1+", color: "text-pink-500" },
+    { label: "Code Commits", value: "500+", color: "text-amber-500" },
   ];
 
   return (

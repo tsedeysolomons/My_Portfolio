@@ -73,6 +73,9 @@ export default function Skill() {
       responsivedesign: Si.SiPwa,
       assemblylanguage: Si.SiWebassembly,
       cprogramming: Si.SiCplusplus,
+      sqlserver: Si.SiMicrosoftsqlserver,
+      azureappservice: Si.SiMicrosoftazure,
+      swagger: Si.SiSwagger,
     };
 
     const Icon = iconMap[n] || null;
