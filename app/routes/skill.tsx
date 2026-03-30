@@ -111,7 +111,7 @@ export default function Skill() {
         viewport={{ once: true }}
         className="text-center mb-20"
       >
-        <h2 className="text-4xl md:text-6xl font-black mb-6">Technical Arsenal</h2>
+        <h2 className="text-4xl md:text-6xl font-black mb-6">Technical Skill</h2>
         <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
           A comprehensive overview of my tech stack, specialized in building scalable and performant applications.
         </p>

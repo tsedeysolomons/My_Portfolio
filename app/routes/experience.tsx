@@ -32,7 +32,8 @@ export default function Experience() {
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
-    return new Date(dateStr).getFullYear().toString();
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
   const getIcon = (type: string) => {
