@@ -9,9 +9,12 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@portabletext/react": "^6.0.3",
     "@radix-ui/react-slot": "^1.2.3",
     "@react-router/node": "^7.4.0",
     "@react-router/serve": "^7.4.0",
+    "@sanity/client": "^7.20.0",
+    "@sanity/image-url": "^2.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",

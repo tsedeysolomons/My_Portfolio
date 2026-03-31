@@ -4,18 +4,20 @@ import {
   Search, Calendar, Clock, User, Tag, ArrowRight, 
   ChevronLeft, ChevronRight, BookOpen, Newspaper 
 } from "lucide-react";
+import { client, urlFor } from "~/lib/sanity";
+import { PortableText } from "@portabletext/react";
 
 interface Post {
-  id: number;
+  _id: string;
   title: string;
+  slug: string;
   excerpt: string;
   category: string;
-  content: string;
+  mainImage: any;
   author: string;
   published_date: string;
   read_time: string;
-  tags: string[];
-  featured: boolean;
+  content: any; // PortableText JSON
 }
 
 const categories = ["All", "Web Development", "Embedded Systems", "Career", "Python", "Backend"];
@@ -35,36 +37,34 @@ export default function Blog() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/blog/featured")
-      .then((res) => res.json())
-      .then((json) => setFeaturedPosts(json.data || []));
+    client.fetch(`*[_type == "post" && featured == true] {
+      _id, title, "slug": slug.current, excerpt, 
+      "category": categories[0]->title, mainImage,
+      "author": author->name, "published_date": publishedAt,
+      "read_time": "8 min read"
+    }`).then(setFeaturedPosts);
   }, []);
 
   useEffect(() => {
     setLoading(true);
-    const params = new URLSearchParams({
-      page: currentPage.toString(),
-      limit: "6",
-      search: searchTerm,
-      category: selectedCategory === "All" ? "" : selectedCategory,
-    });
+    const searchFilter = searchTerm ? `&& (title match "${searchTerm}*" || excerpt match "${searchTerm}*")` : "";
+    const categoryFilter = selectedCategory !== "All" ? `&& "${selectedCategory}" in categories[]->title` : "";
 
-    fetch(`http://localhost:5000/api/blog?${params}`)
-      .then((res) => res.json())
-      .then((json) => {
-        setPosts(json.data || []);
-        setPagination(json.pagination);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching posts:", err);
-        setLoading(false);
-      });
+    client.fetch(`*[_type == "post" ${searchFilter} ${categoryFilter}] {
+      _id, title, "slug": slug.current, excerpt, 
+      "category": categories[0]->title, mainImage,
+      "author": author->name, "published_date": publishedAt,
+      "read_time": "5 min read"
+    } | order(published_date desc)`).then(data => {
+      setPosts(data);
+      setLoading(false);
+    });
   }, [searchTerm, selectedCategory, currentPage]);
 
   useEffect(() => {
     if (selectedPost) {
-      fetch(`http://localhost:5000/api/blog/${selectedPost.id}/comments`)
+      // Fetching comments from our CUSTOM BACKEND using the Sanity ID as a persistent key
+      fetch(`http://localhost:5000/api/blog/${selectedPost._id}/comments`)
         .then(res => res.json())
         .then(json => setComments(json.data || []));
     }
@@ -76,7 +76,7 @@ export default function Blog() {
     
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/blog/${selectedPost.id}/comments`, {
+      const response = await fetch(`http://localhost:5000/api/blog/${selectedPost._id}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newComment)
@@ -95,11 +95,14 @@ export default function Blog() {
     }
   };
 
-  const handlePostClick = (postId: number) => {
-    fetch(`http://localhost:5000/api/blog/${postId}`)
-      .then((res) => res.json())
-      .then((json) => setSelectedPost(json.data))
-      .catch((err) => console.error("Error fetching post details:", err));
+  const handlePostClick = (postId: string) => {
+    client.fetch(`*[_type == "post" && _id == $id][0] {
+      _id, title, "slug": slug.current, excerpt, 
+      "category": categories[0]->title, mainImage,
+      "author": author->name, "published_date": publishedAt,
+      "read_time": "5 min read",
+      "content": body
+    }`, { id: postId }).then(setSelectedPost);
   };
 
   if (selectedPost) {
@@ -118,10 +121,19 @@ export default function Blog() {
         </button>
 
         <article className="glass-card p-8 md:p-12">
+          {selectedPost.mainImage && (
+            <div className="mb-12 rounded-3xl overflow-hidden aspect-video">
+              <img 
+                src={urlFor(selectedPost.mainImage).url()} 
+                alt={selectedPost.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
           <header className="mb-12">
             <div className="flex items-center gap-2 text-brand-500 mb-6 px-3 py-1 bg-brand-500/10 rounded-full w-fit text-xs font-bold uppercase tracking-widest">
               <Newspaper size={14} />
-              {selectedPost.category}
+              {selectedPost.category || "General"}
             </div>
             
             <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tight">
@@ -144,8 +156,20 @@ export default function Blog() {
             </div>
           </header>
 
-          <div className="prose prose-invert prose-brand max-w-none text-gray-500 dark:text-gray-400 leading-relaxed text-lg">
-             <div dangerouslySetInnerHTML={{ __html: selectedPost.content.replace(/\n/g, "<br />") }} />
+          <div className="prose prose-invert prose-brand max-w-none text-gray-500 dark:text-gray-400 leading-relaxed text-lg sanity-content">
+             <PortableText 
+               value={selectedPost.content} 
+               components={{
+                 block: {
+                   h1: ({children}) => <h1 className="text-3xl font-black mb-6 mt-12 text-white">{children}</h1>,
+                   h2: ({children}) => <h2 className="text-2xl font-bold mb-4 mt-8 text-white">{children}</h2>,
+                   normal: ({children}) => <p className="mb-6 leading-relaxed">{children}</p>,
+                 },
+                 list: {
+                   bullet: ({children}) => <ul className="list-disc pl-6 mb-6 space-y-2">{children}</ul>,
+                 }
+               }}
+             />
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200/10 flex flex-wrap gap-2">
@@ -332,17 +356,26 @@ export default function Blog() {
           {posts.map((post, idx) => (
             <motion.div
               layout
-              key={post.id}
+              key={post._id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.05 }}
               whileHover={{ y: -8 }}
-              onClick={() => handlePostClick(post.id)}
-              className="glass-card p-8 flex flex-col cursor-pointer group"
+              onClick={() => handlePostClick(post._id)}
+              className="glass-card p-6 flex flex-col cursor-pointer group"
             >
+              {post.mainImage && (
+                <div className="mb-6 rounded-2xl overflow-hidden aspect-[16/10] bg-gray-100 dark:bg-white/5">
+                  <img 
+                    src={urlFor(post.mainImage).url()} 
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </div>
+              )}
               <div className="flex items-center gap-2 text-brand-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
                 <BookOpen size={12} />
-                {post.category}
+                {post.category || "General"}
               </div>
               <h3 className="text-2xl font-bold mb-4 group-hover:text-brand-500 transition-colors leading-tight">
                 {post.title}
