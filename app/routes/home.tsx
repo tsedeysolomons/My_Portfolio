@@ -24,8 +24,27 @@ const cardVars: Variants = {
   visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
+const QUOTES = [
+  { text: "Programs must be written for people to read, and only incidentally for machines to execute.", author: "Abelson & Sussman" },
+  { text: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" },
+  { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+  { text: "Experience is the name everyone gives to their mistakes.", author: "Oscar Wilde" },
+  { text: "Simplicity is the soul of efficiency.", author: "Austin Freeman" },
+  { text: "Before software can be reusable it first has to be usable.", author: "Ralph Johnson" },
+  { text: "Make it work, make it right, make it fast.", author: "Kent Beck" },
+];
+
 export default function Home() {
   const [time, setTime] = useState("");
+  const [quote, setQuote] = useState(QUOTES[0]);
+
+  const shuffleQuote = () => {
+    let nextIndex;
+    do {
+      nextIndex = Math.floor(Math.random() * QUOTES.length);
+    } while (QUOTES.length > 1 && QUOTES[nextIndex] === quote);
+    setQuote(QUOTES[nextIndex]);
+  };
 
   useEffect(() => {
     const updateTime = () => {
@@ -183,7 +202,46 @@ export default function Home() {
           <Link to="/experience" className="btn-outline h-12 w-full text-xs font-black tracking-widest mt-8">Full Resume</Link>
         </motion.div>
 
+        {/* --- Random Dev Quote Card --- */}
+        <motion.div 
+          variants={cardVars}
+          className="lg:col-span-8 lg:row-span-2 glass-card p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group min-h-[300px]"
+        >
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-pink-500 to-amber-500" />
+          <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-10 transition-opacity">
+            <QuoteIcon size={200} />
+          </div>
+          
+          <QuoteIcon size={40} className="text-brand-500 mb-6 group-hover:rotate-12 transition-transform duration-500" />
+          
+          <blockquote className="max-w-3xl">
+            <p className="text-xl md:text-2xl font-black italic tracking-tight mb-4 text-gray-800 dark:text-gray-100">
+              "{quote.text}"
+            </p>
+            <cite className="text-sm font-bold uppercase tracking-[0.3em] text-brand-500 not-italic">
+              — {quote.author}
+            </cite>
+          </blockquote>
+
+          <button 
+            onClick={shuffleQuote}
+            className="mt-8 p-2 rounded-full hover:bg-brand-500/10 transition-colors text-gray-400 hover:text-brand-500"
+            title="New Quote"
+          >
+            <Sparkles size={20} />
+          </button>
+        </motion.div>
+
       </motion.div>
     </div>
+  );
+}
+
+function QuoteIcon({ size, className }: { size: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 2.5 1.5 6 3 8Z" />
+      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 2.5 1.5 6 3 8Z" />
+    </svg>
   );
 }
