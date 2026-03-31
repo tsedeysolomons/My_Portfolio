@@ -70,7 +70,7 @@ export const Header = ({ onToggle }: { onToggle: () => void }) => {
           </motion.button>
 
           <a
-            href="/Tsedey's Resume(F).pdf"
+            href="/24.21.TsedeysResume.pdf"
             className="hidden sm:flex btn-primary !h-10 !px-4 !text-sm gap-2"
             target="_blank"
             rel="noopener noreferrer"
@@ -113,7 +113,7 @@ export const Header = ({ onToggle }: { onToggle: () => void }) => {
                 </Link>
               ))}
               <a
-                href="/Tsedey's Resume(F).pdf"
+                href="/24.21.TsedeysResume.pdf"
                 className="btn-primary w-full gap-2"
                 target="_blank"
                 rel="noopener noreferrer"
