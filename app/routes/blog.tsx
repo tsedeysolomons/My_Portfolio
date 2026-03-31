@@ -29,6 +29,10 @@ export default function Blog() {
   const [featuredPosts, setFeaturedPosts] = useState<Post[]>([]);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 0 });
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState<any[]>([]);
+  const [newComment, setNewComment] = useState({ name: "", email: "", content: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/blog/featured")
@@ -57,6 +61,39 @@ export default function Blog() {
         setLoading(false);
       });
   }, [searchTerm, selectedCategory, currentPage]);
+
+  useEffect(() => {
+    if (selectedPost) {
+      fetch(`http://localhost:5000/api/blog/${selectedPost.id}/comments`)
+        .then(res => res.json())
+        .then(json => setComments(json.data || []));
+    }
+  }, [selectedPost]);
+
+  const handlePostComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPost || !newComment.name || !newComment.content) return;
+    
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/blog/${selectedPost.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newComment)
+      });
+      const data = await response.json();
+      if (data.success) {
+        setComments([data.data, ...comments]);
+        setNewComment({ name: "", email: "", content: "" });
+        setSubmitSuccess(true);
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      }
+    } catch (err) {
+      console.error("Error posting comment:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handlePostClick = (postId: number) => {
     fetch(`http://localhost:5000/api/blog/${postId}`)
@@ -119,6 +156,133 @@ export default function Blog() {
             ))}
           </div>
         </article>
+
+        {/* Comment Section */}
+        <section className="mt-16 space-y-12">
+          <div className="flex items-center gap-4">
+            <h3 className="text-2xl font-black tracking-tight">{comments.length} Discussion{comments.length !== 1 ? 's' : ''}</h3>
+            <div className="h-px bg-gray-200/10 flex-1" />
+          </div>
+
+          {/* Comments List */}
+          <div className="space-y-6">
+            {comments.map((comment) => (
+              <motion.div 
+                key={comment.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="glass-card p-6 border-transparent bg-gray-50/50 dark:bg-white/5"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500 font-black text-sm uppercase">
+                      {comment.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-900 dark:text-white">{comment.name}</p>
+                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                        {new Date(comment.created_at).toLocaleDateString()} at {new Date(comment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed pl-[52px]">
+                  {comment.content}
+                </p>
+              </motion.div>
+            ))}
+            
+            {comments.length === 0 && (
+              <div className="text-center py-12 border-2 border-dashed border-gray-200/10 rounded-3xl">
+                <p className="text-gray-500 font-medium italic">No comments yet. Be the first to start the conversation!</p>
+              </div>
+            )}
+          </div>
+
+          {/* Comment Form */}
+          <div className="glass-card p-8 border-brand-500/10 relative overflow-hidden">
+            <AnimatePresence>
+              {submitSuccess && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md flex flex-col items-center justify-center text-center p-8"
+                >
+                  <div className="w-16 h-16 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center mb-4">
+                    <Clock size={32} />
+                  </div>
+                  <h4 className="text-2xl font-black mb-2">Comment Posted!</h4>
+                  <p className="text-gray-500">Thank you for sharing your thoughts. Your comment is now live.</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="flex items-center justify-between mb-8">
+              <h4 className="text-lg font-bold flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-500">
+                  <Newspaper size={18} />
+                </div>
+                Leave a Comment
+              </h4>
+            </div>
+
+            <form onSubmit={handlePostComment} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1">Identity</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={newComment.name}
+                    onChange={(e) => setNewComment({ ...newComment, name: e.target.value })}
+                    className="w-full h-12 px-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-transparent focus:border-brand-500/40 focus:bg-white dark:focus:bg-white/10 outline-none transition-all placeholder:text-gray-500 font-medium"
+                    placeholder="Your full name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1">Contact</label>
+                  <input 
+                    required
+                    type="email" 
+                    value={newComment.email}
+                    onChange={(e) => setNewComment({ ...newComment, email: e.target.value })}
+                    className="w-full h-12 px-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-transparent focus:border-brand-500/40 focus:bg-white dark:focus:bg-white/10 outline-none transition-all placeholder:text-gray-500 font-medium"
+                    placeholder="Email (Will not be published)"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1">Thoughts</label>
+                <textarea 
+                  required
+                  rows={5}
+                  value={newComment.content}
+                  onChange={(e) => setNewComment({ ...newComment, content: e.target.value })}
+                  className="w-full p-6 rounded-3xl bg-gray-50 dark:bg-white/5 border border-transparent focus:border-brand-500/40 focus:bg-white dark:focus:bg-white/10 outline-none transition-all placeholder:text-gray-500 font-medium resize-none shadow-inner"
+                  placeholder="What's on your mind? Share your feedback or questions..."
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-4">
+                <p className="text-[11px] text-gray-500 dark:text-gray-500 max-w-xs italic">
+                  Your email address is required for verification and will not be shared publicly.
+                </p>
+                <button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn-primary gap-4 px-10 rounded-2xl group shadow-xl shadow-brand-500/20 disabled:opacity-50"
+                >
+                  <span className="text-sm font-black uppercase tracking-widest">
+                    {isSubmitting ? "Posting..." : "Post Comment"}
+                  </span>
+                  {!isSubmitting && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
       </motion.div>
     );
   }
