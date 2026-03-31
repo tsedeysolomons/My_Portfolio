@@ -98,7 +98,7 @@ export default function Home() {
               <div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-500">
                 <Code2 size={18} />
               </div>
-              Arsenal
+              Technical Skill
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {["Full-Stack", "TS / JS", "Python", "Cloud", "UI/UX", "API Design"].map((item) => (
@@ -122,8 +122,8 @@ export default function Home() {
            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent z-10" />
            <div className="absolute top-10 left-10 z-20">
               <span className="px-3 py-1 rounded-full bg-brand-500 text-[10px] font-black text-white uppercase tracking-widest mb-4 inline-block">Featured Case Study</span>
-              <h3 className="text-4xl font-black text-white tracking-tighter mb-2">Midr Babur E-Ticket</h3>
-              <p className="text-gray-300 max-w-md">Modernizing Ethiopia's transportation with digital efficiency.</p>
+              <h3 className="text-4xl font-black text-white tracking-tighter mb-2">EMwA Trainer Pooling System</h3>
+              <p className="text-gray-300 max-w-md leading-relaxed">Streamlining professional trainer mobilization for the Ethiopian Midwifes Association with a centralized, data-driven management platform. The system optimizes nationwide allocation across Ethiopia's healthcare education network.</p>
            </div>
            
            <div className="absolute bottom-10 right-10 z-20">
