@@ -13,6 +13,7 @@ interface Post {
   slug: string;
   excerpt: string;
   category: string;
+  tags?: string[];
   mainImage: any;
   author: string;
   published_date: string;
@@ -39,7 +40,7 @@ export default function Blog() {
   useEffect(() => {
     client.fetch(`*[_type == "post" && featured == true] {
       _id, title, "slug": slug.current, excerpt, 
-      "category": categories[0]->title, mainImage,
+      "category": categories[0]->title, tags, mainImage,
       "author": author->name, "published_date": publishedAt,
       "read_time": "8 min read"
     }`).then(setFeaturedPosts);
@@ -52,7 +53,7 @@ export default function Blog() {
 
     client.fetch(`*[_type == "post" ${searchFilter} ${categoryFilter}] {
       _id, title, "slug": slug.current, excerpt, 
-      "category": categories[0]->title, mainImage,
+      "category": categories[0]->title, tags, mainImage,
       "author": author->name, "published_date": publishedAt,
       "read_time": "5 min read"
     } | order(published_date desc)`).then(data => {
@@ -98,7 +99,7 @@ export default function Blog() {
   const handlePostClick = (postId: string) => {
     client.fetch(`*[_type == "post" && _id == $id][0] {
       _id, title, "slug": slug.current, excerpt, 
-      "category": categories[0]->title, mainImage,
+      "category": categories[0]->title, tags, mainImage,
       "author": author->name, "published_date": publishedAt,
       "read_time": "5 min read",
       "content": body

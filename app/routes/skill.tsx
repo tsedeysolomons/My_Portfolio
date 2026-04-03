@@ -28,16 +28,20 @@ export default function Skill() {
 
   const getCategoryIcon = (cat: string) => {
     switch (cat.toLowerCase()) {
-      case 'frontend development': return <Globe size={20} />;
-      case 'backend development': return <Database size={20} />;
-      case 'mobile development': return <Cpu size={20} />;
-      default: return <Layout size={20} />;
+      case "frontend development":
+        return <Globe size={20} />;
+      case "backend development":
+        return <Database size={20} />;
+      case "mobile development":
+        return <Cpu size={20} />;
+      default:
+        return <Layout size={20} />;
     }
   };
 
   const getTechIcon = (name: string) => {
-    const n = name.toLowerCase().replace(/[\s\.\/#\+]/g, ""); 
-    
+    const n = name.toLowerCase().replace(/[\s\.\/#\+]/g, "");
+
     const iconMap: Record<string, any> = {
       react: Si.SiReact,
       nextjs: Si.SiNextdotjs,
@@ -49,8 +53,8 @@ export default function Skill() {
       nodejs: Si.SiNodedotjs,
       express: Si.SiExpress,
       python: Si.SiPython,
-      csharp: Si.SiCsharp,
-      c: Si.SiCsharp,
+      csharp: Si.SiSharp,
+      c: Si.SiC,
       mongodb: Si.SiMongodb,
       postgresql: Si.SiPostgresql,
       mysql: Si.SiMysql,
@@ -73,26 +77,30 @@ export default function Skill() {
       responsivedesign: Si.SiPwa,
       assemblylanguage: Si.SiWebassembly,
       cprogramming: Si.SiCplusplus,
-      sqlserver: Si.SiMicrosoftsqlserver,
-      azureappservice: Si.SiMicrosoftazure,
+      sqlserver: Si.SiMssql,
+      azureappservice: Si.SiAzure,
       swagger: Si.SiSwagger,
     };
 
     const Icon = iconMap[n] || null;
-    return Icon ? <Icon size={22} /> : <span className="text-lg font-bold">{name[0]}</span>;
+    return Icon ? (
+      <Icon size={22} />
+    ) : (
+      <span className="text-lg font-bold">{name[0]}</span>
+    );
   };
 
   const containerVars = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   const itemVars = {
     hidden: { opacity: 0, scale: 0.95 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } }
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
   };
 
   if (loading) {
@@ -105,21 +113,24 @@ export default function Skill() {
 
   return (
     <div className="py-24 px-6 max-w-7xl mx-auto">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         className="text-center mb-20"
       >
-        <h2 className="text-4xl md:text-6xl font-black mb-6">Technical Skill</h2>
+        <h2 className="text-4xl md:text-6xl font-black mb-6">
+          Technical Skill
+        </h2>
         <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-          A comprehensive overview of my tech stack, specialized in building scalable and performant applications.
+          A comprehensive overview of my tech stack, specialized in building
+          scalable and performant applications.
         </p>
       </motion.div>
 
       <div className="grid gap-16">
         {categories.map((cat, idx) => (
-          <motion.section 
+          <motion.section
             key={cat}
             initial="hidden"
             whileInView="visible"
