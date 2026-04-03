@@ -21,7 +21,7 @@ interface Post {
   content: any; // PortableText JSON
 }
 
-const categories = ["All", "Web Development", "Embedded Systems", "Career", "Python", "Backend"];
+const categories = ["All", "Web Development", "Embedded Systems", "AI / ML", "Python", "Backend"];
 
 export default function Blog() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -40,8 +40,9 @@ export default function Blog() {
   useEffect(() => {
     client.fetch(`*[_type == "post" && featured == true] {
       _id, title, "slug": slug.current, excerpt, 
-      "category": categories[0]->title, tags, mainImage,
-      "author": author->name, "published_date": publishedAt,
+      "category": coalesce(categories[0]->title, "General"), tags, mainImage,
+      "author": coalesce(author->name, "Anonymous"), 
+      "published_date": coalesce(publishedAt, _createdAt),
       "read_time": "8 min read"
     }`).then(setFeaturedPosts);
   }, []);
@@ -53,8 +54,9 @@ export default function Blog() {
 
     client.fetch(`*[_type == "post" ${searchFilter} ${categoryFilter}] {
       _id, title, "slug": slug.current, excerpt, 
-      "category": categories[0]->title, tags, mainImage,
-      "author": author->name, "published_date": publishedAt,
+      "category": coalesce(categories[0]->title, "General"), tags, mainImage,
+      "author": coalesce(author->name, "Anonymous"), 
+      "published_date": coalesce(publishedAt, _createdAt),
       "read_time": "5 min read"
     } | order(published_date desc)`).then(data => {
       setPosts(data);
