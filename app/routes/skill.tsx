@@ -77,8 +77,8 @@ export default function Skill() {
       responsivedesign: Si.SiPwa,
       assemblylanguage: Si.SiWebassembly,
       cprogramming: Si.SiCplusplus,
-      sqlserver: Si.SiMssql,
-      azureappservice: Si.SiAzure,
+      sqlserver: Si.SiMicrosoftsqlserver,
+      azureappservice: Si.SiMicrosoftazure,
       swagger: Si.SiSwagger,
     };
 

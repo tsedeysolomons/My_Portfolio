@@ -1,15 +1,16 @@
 import { createClient } from "@sanity/client";
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url";
 
 export const client = createClient({
   projectId: "n5ba2mep",
   dataset: "production",
-  useCdn: false, // `false` if you want to ensure fresh data
-  apiVersion: "2024-03-31", // current date
+  useCdn: true, // CDN for public reads (fixes 403 for unauth queries)
+  apiVersion: "2024-03-31",
 });
 
-const builder = imageUrlBuilder(client);
+export const builder = createImageUrlBuilder(client);
 
 export function urlFor(source: any) {
   return builder.image(source);
 }
+
