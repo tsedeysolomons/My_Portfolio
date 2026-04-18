@@ -5,7 +5,6 @@ import {
   Calendar,
   Clock,
   User,
-  Tag,
   ArrowRight,
   ChevronLeft,
   ChevronRight,
@@ -18,15 +17,16 @@ import { PortableText } from "@portabletext/react";
 interface Post {
   _id: string;
   title: string;
-  slug: string;
+  slug: { current: string };
   excerpt: string;
   category: string;
   tags?: string[];
   mainImage: any;
   author: string;
-  published_date: string;
+  publishedAt: string;
   read_time: string;
-  content: any; // PortableText JSON
+  body: any;
+  featured: boolean;
 }
 
 const categories = [
@@ -59,17 +59,21 @@ export default function Blog() {
   useEffect(() => {
     client
       .fetch(
-        `*[_type == "post" && featured == true] {
+        `*[_type == "post" && featured == true] | order(publishedAt desc) {
       _id, title, "slug": slug.current, excerpt, 
-      "category": coalesce(categories[0]->title, "General"), tags, mainImage,
-      "author": coalesce(author->name, "Anonymous"), 
-      "published_date": coalesce(publishedAt, _createdAt),
-      "read_time": "8 min read"
+      "category": categories[0]->title, tags, mainImage,
+      "author": author->name, publishedAt,
+      "read_time": "8 min read", featured
     }`,
       )
-      .then(setFeaturedPosts)
+      .then((data) => {
+        console.log("Featured posts fetched successfully:", data);
+        setFeaturedPosts(data || []);
+      })
       .catch((err) => {
         console.error("Failed to fetch featured posts:", err);
+        console.error("Error details:", err.message);
+        setFeaturedPosts([]);
       });
   }, []);
 
@@ -83,22 +87,26 @@ export default function Blog() {
         ? `&& "${selectedCategory}" in categories[]->title`
         : "";
 
-    client
-      .fetch(
-        `*[_type == "post" ${searchFilter} ${categoryFilter}] {
+    const query = `*[_type == "post" ${searchFilter} ${categoryFilter}] | order(publishedAt desc) {
       _id, title, "slug": slug.current, excerpt, 
-      "category": coalesce(categories[0]->title, "General"), tags, mainImage,
-      "author": coalesce(author->name, "Anonymous"), 
-      "published_date": coalesce(publishedAt, _createdAt),
-      "read_time": "5 min read"
-    } | order(publishedAt desc)`,
-      )
+      "category": categories[0]->title, tags, mainImage,
+      "author": author->name, publishedAt,
+      "read_time": "5 min read", featured
+    }`;
+
+    console.log("Fetching posts with query:", query);
+    
+    client
+      .fetch(query)
       .then((data) => {
-        setPosts(data);
+        console.log("Posts fetched successfully:", data);
+        setPosts(data || []);
         setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to fetch posts:", err);
+        console.error("Error details:", err.message);
+        setPosts([]);
         setLoading(false);
       });
   }, [searchTerm, selectedCategory, currentPage]);
@@ -145,8 +153,8 @@ export default function Blog() {
       '*[_type == "post" && _id == $id][0] {' +
       '_id, title, "slug": slug.current, excerpt, ' +
       '"category": categories[0]->title, tags, mainImage, ' +
-      '"author": author->name, "published_date": publishedAt, ' +
-      '"read_time": "5 min read", "content": body' +
+      '"author": author->name, publishedAt, ' +
+      '"read_time": "5 min read", body, featured' +
       "}";
 
     client
@@ -199,7 +207,7 @@ export default function Blog() {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar size={16} className="text-brand-500" />
-                {new Date(selectedPost.published_date).toLocaleDateString()}
+                {new Date(selectedPost.publishedAt).toLocaleDateString()}
               </div>
               <div className="flex items-center gap-2">
                 <Clock size={16} className="text-brand-500" />
@@ -210,7 +218,7 @@ export default function Blog() {
 
           <div className="prose prose-invert prose-brand max-w-none text-gray-500 dark:text-gray-400 leading-relaxed text-lg sanity-content">
             <PortableText
-              value={selectedPost.content}
+              value={selectedPost.body}
               components={{
                 block: {
                   h1: ({ children }) => (
@@ -463,6 +471,65 @@ export default function Blog() {
         </div>
       </div>
 
+      {/* Featured Posts Section */}
+      {featuredPosts.length > 0 && selectedCategory === "All" && !searchTerm && (
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+            <span className="w-1 h-8 bg-brand-500 rounded-full" />
+            Featured Articles
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {featuredPosts.map((post, idx) => (
+              <motion.div
+                key={post._id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ y: -8 }}
+                onClick={() => handlePostClick(post._id)}
+                className="glass-card p-6 flex flex-col cursor-pointer group border-2 border-brand-500/30"
+              >
+                {post.mainImage && (
+                  <div className="mb-6 rounded-2xl overflow-hidden aspect-[16/10] bg-gray-100 dark:bg-white/5">
+                    <img
+                      src={urlFor(post.mainImage).url()}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-brand-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                  <BookOpen size={12} />
+                  {post.category || "General"}
+                </div>
+                <h3 className="text-2xl font-bold mb-4 group-hover:text-brand-500 transition-colors leading-tight">
+                  {post.title}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8 line-clamp-3">
+                  {post.excerpt}
+                </p>
+                <div className="mt-auto flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <div className="flex items-center gap-1">
+                      <Calendar size={10} />
+                      {new Date(post.publishedAt).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock size={10} />
+                      {post.read_time}
+                    </div>
+                  </div>
+                  <div className="p-2 rounded-full bg-brand-500/10 text-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all">
+                    <ArrowRight size={14} />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="h-px bg-gray-200/10 my-16" />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <AnimatePresence mode="popLayout">
           {posts.map((post, idx) => (
@@ -499,7 +566,7 @@ export default function Blog() {
                 <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                   <div className="flex items-center gap-1">
                     <Calendar size={10} />
-                    {new Date(post.published_date).toLocaleDateString()}
+                    {new Date(post.publishedAt).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock size={10} />
