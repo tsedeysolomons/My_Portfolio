@@ -114,7 +114,8 @@ export default function Blog() {
   useEffect(() => {
     if (selectedPost) {
       // Fetching comments from our CUSTOM BACKEND using the Sanity ID as a persistent key
-      fetch("http://localhost:5000/api/blog/" + selectedPost._id + "/comments")
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      fetch(`${API_URL}/api/blog/` + selectedPost._id + "/comments")
         .then((res) => res.json())
         .then((json) => setComments(json.data || []));
     }
@@ -126,8 +127,9 @@ export default function Blog() {
 
     setIsSubmitting(true);
     try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
       const response = await fetch(
-        "http://localhost:5000/api/blog/" + selectedPost._id + "/comments",
+        `${API_URL}/api/blog/` + selectedPost._id + "/comments",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
