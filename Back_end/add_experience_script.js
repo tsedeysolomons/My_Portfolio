@@ -28,7 +28,7 @@ async function addNewExperience() {
         'Software Developer',
         'DAF Tech Computer',
         'Addis Ababa',
-        '2024-12-01',
+        '2025-12-01',
         null,
         'Full-time',
         'Leading full-stack development initiatives using modern frameworks like Angular and .NET. Dedicated to building scalable business solutions and optimizing system performance.',
