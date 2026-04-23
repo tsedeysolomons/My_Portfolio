@@ -14,8 +14,10 @@ export default function Skill() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/skills")
+    fetch(`${API_URL}/api/skills`)
       .then((res) => res.json())
       .then((json) => {
         setSkills(json.data);
@@ -77,8 +79,8 @@ export default function Skill() {
       responsivedesign: Si.SiPwa,
       assemblylanguage: Si.SiWebassembly,
       cprogramming: Si.SiCplusplus,
-      sqlserver: Si.SiMicrosoftsqlserver,
-      azureappservice: Si.SiMicrosoftazure,
+      sqlserver: Si.SiMysql, // closest available
+      azureappservice: Si.SiGooglecloud, // closest available
       swagger: Si.SiSwagger,
     };
 

@@ -20,8 +20,10 @@ export default function Experience() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/experience")
+    fetch(`${API_URL}/api/experience`)
       .then((res) => res.json())
       .then((json) => {
         setExperiences(json.data);

@@ -56,7 +56,7 @@ export default function About() {
             </div>
             <div className="flex items-center gap-2 font-bold text-sm">
               <Mail size={18} className="text-brand-500" />
-              <span>hello@tsedeysolomons.dev</span>
+              <span>tsdeys19@gmail.com</span>
             </div>
           </div>
         </motion.div>
@@ -71,6 +71,7 @@ export default function About() {
             <img 
               src="/tsedeypic.JPG" 
               alt="Tsedey Solomon" 
+              loading="lazy"
               className="w-full h-full object-cover scale-110 grayscale hover:grayscale-0 transition-all duration-700" 
             />
           </div>

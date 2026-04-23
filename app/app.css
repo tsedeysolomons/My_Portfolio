@@ -91,7 +91,21 @@
   .glass-card {
     @apply relative overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-white/5 backdrop-blur-md 
            border border-white/20 dark:border-white/10 hover:border-brand-500/50 
-           transition-all duration-500 hover:shadow-2xl hover:shadow-brand-500/10 hover:-translate-y-1;
+           transition-all duration-500 hover:-translate-y-1;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    box-shadow:
+      0 0 0 1px rgba(0, 240, 255, 0.1),
+      0 0 20px rgba(0, 240, 255, 0.25),
+      0 0 40px rgba(0, 240, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    box-shadow:
+      0 0 0 1px rgba(0, 240, 255, 0.15),
+      0 0 25px rgba(0, 240, 255, 0.4),
+      0 0 50px rgba(0, 240, 255, 0.25);
+    transform: translateY(-2px);
   }
 
   /* Bento specific grid styling */
