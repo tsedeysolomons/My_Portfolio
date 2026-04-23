@@ -1,5 +1,6 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build/client",
-  "framework": "react-router"
+  "framework": "react-router",
+  "nodeVersion": "20.x"
 }
