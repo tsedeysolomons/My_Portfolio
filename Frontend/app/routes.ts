@@ -8,8 +8,8 @@ import {
 export default [
   layout("./components/layout/Applayout.tsx", [
     index("routes/home.tsx"), // <- This should be a file path, not just "routes/home.tsx"
-    route("about", "./routes/about.tsx"),
-    route("contact", "./routes/contact.tsx"),
+    route("about", "./routes/About.tsx"),
+    route("contact", "./routes/Contact.tsx"),
     route("skill", "./routes/skill.tsx"),
     route("project", "./routes/project.tsx"),
     route("experience", "./routes/experience.tsx"),
