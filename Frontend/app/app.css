@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Precision Cosmic Colors */
+  --color-brand-50: #f5f7ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-900: #1e1b4b;
+  
+  --color-accent-pink: #d946ef;
+  --color-accent-blue: #0ea5e9;
+
+  /* Theme color mapping */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --animate-blob: blob 7s infinite;
+  --animate-mesh: mesh 15s ease-in-out infinite;
+  --animate-spin-slow: spin 20s linear infinite;
+}
+
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes mesh {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+}
+
+@layer base {
+  * {
+    @apply border-gray-200/20 dark:border-white/10 transition-colors duration-300;
+  }
+  
+  body {
+    @apply bg-background text-foreground overflow-x-hidden relative;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* High-Performance Adaptive Background */
+  .bg-cosmic {
+    @apply fixed inset-0 -z-50 h-full w-full pointer-events-none;
+    background: linear-gradient(-45deg, #f8fafc, #f1f5f9, #e2e8f0, #f8fafc);
+    background-size: 400% 400%;
+    animation: mesh 15s ease infinite;
+    opacity: 0.8;
+  }
+
+  .dark .bg-cosmic {
+    background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #2e1065);
+    background-size: 400% 400%;
+    opacity: 1;
+  }
+
+  /* Shifting Light Blobs */
+  .blob {
+    @apply absolute -z-40 rounded-full blur-[100px] opacity-10 dark:opacity-30 pointer-events-none animate-blob;
+  }
+
+  .glass {
+    @apply bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl;
+  }
+
+  .glass-card {
+    @apply relative overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-white/5 backdrop-blur-md 
+           border border-white/20 dark:border-white/10 hover:border-brand-500/50 
+           transition-all duration-500 hover:-translate-y-1;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    box-shadow:
+      0 0 0 1px rgba(0, 240, 255, 0.1),
+      0 0 20px rgba(0, 240, 255, 0.25),
+      0 0 40px rgba(0, 240, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    box-shadow:
+      0 0 0 1px rgba(0, 240, 255, 0.15),
+      0 0 25px rgba(0, 240, 255, 0.4),
+      0 0 50px rgba(0, 240, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  /* Bento specific grid styling */
+  .bento-grid {
+    @apply grid gap-4 grid-rows-[repeat(6,1fr)];
+  }
+
+  .btn-primary {
+    @apply relative flex h-14 items-center justify-center rounded-2xl bg-brand-500 px-8 font-black 
+           text-white shadow-xl shadow-brand-500/30 transition-all hover:bg-brand-600 
+           hover:shadow-brand-500/50 active:scale-95;
+  }
+
+  .btn-outline {
+    @apply flex h-14 items-center justify-center rounded-2xl border border-gray-200 dark:border-white/10 
+           px-8 font-black transition-all hover:bg-gray-50 dark:hover:bg-white/10 active:scale-95;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-brand-500/20 rounded-full;
+}

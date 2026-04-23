@@ -1,0 +1,44 @@
+{
+  "name": "my-potfolio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@portabletext/react": "^6.0.3",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@react-router/node": "^7.4.0",
+    "@react-router/serve": "^7.4.0",
+    "@sanity/client": "^7.20.0",
+    "@sanity/image-url": "^2.1.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.38.0",
+    "isbot": "^5.1.17",
+    "lucide-react": "^0.484.0",
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "react-router": "^7.6.2",
+    "react-router-dom": "^7.6.2",
+    "tailwind-merge": "^3.0.2",
+    "tw-animate-css": "^1.2.4"
+  },
+  "devDependencies": {
+    "@react-router/dev": "^7.4.0",
+    "@tailwindcss/vite": "^4.0.17",
+    "@types/node": "^20",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "react-router-devtools": "^1.1.0",
+    "tailwindcss": "^4.0.17",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

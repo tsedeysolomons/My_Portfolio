@@ -1,0 +1,3 @@
+feat: Fetch skills data from API
+
+This commit updates the skills page to fetch data dynamically from the backend API. It introduces a useEffect hook to retrieve the skills from the http://localhost:5000/skills endpoint and updates the component's state.
