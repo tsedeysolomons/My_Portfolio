@@ -1,18 +1,28 @@
 const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const sendContactNotification = async (contactData) => {
   const { name, email, subject, message } = contactData;
 
+  const apiKey = process.env.RESEND_API_KEY;
+  const emailTo = process.env.EMAIL_TO || "tsedeysolomon91@gmail.com";
+
   console.log("📧 Attempting to send email via Resend...");
-  console.log("   To:", process.env.EMAIL_TO);
+  console.log("   API Key exists:", !!apiKey);
+  console.log("   API Key prefix:", apiKey ? apiKey.substring(0, 8) : "MISSING");
+  console.log("   To:", emailTo);
   console.log("   Subject:", `New Portfolio Message: ${subject}`);
+
+  if (!apiKey) {
+    console.error("❌ RESEND_API_KEY is not set!");
+    return false;
+  }
+
+  const resend = new Resend(apiKey);
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "Portfolio Contact <onboarding@resend.dev>",
-      to: [process.env.EMAIL_TO || process.env.EMAIL_USER],
+      from: "onboarding@resend.dev",
+      to: [emailTo],
       subject: `New Portfolio Message: ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
@@ -28,14 +38,14 @@ const sendContactNotification = async (contactData) => {
     });
 
     if (error) {
-      console.error("❌ Resend error:", error);
+      console.error("❌ Resend error:", JSON.stringify(error));
       return false;
     }
 
     console.log("✅ Email sent successfully via Resend! ID:", data.id);
     return true;
-  } catch (error) {
-    console.error("❌ Email delivery failed:", error.message);
+  } catch (err) {
+    console.error("❌ Email delivery failed:", err.message);
     return false;
   }
 };
