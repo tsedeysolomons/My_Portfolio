@@ -1,60 +1,41 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-    ciphers: 'SSLv3'
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * Sends a notification email to the owner when a new message is received.
- */
 const sendContactNotification = async (contactData) => {
   const { name, email, subject, message } = contactData;
 
-  console.log("📧 Attempting to send email...");
-  console.log("   To:", process.env.EMAIL_TO || process.env.EMAIL_USER);
-  console.log("   From:", process.env.EMAIL_USER);
+  console.log("📧 Attempting to send email via Resend...");
+  console.log("   To:", process.env.EMAIL_TO);
   console.log("   Subject:", `New Portfolio Message: ${subject}`);
 
-  // Configuration for the destination email (owner)
-  const mailOptions = {
-    from: `"Portfolio Notification" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_TO || process.env.EMAIL_USER,
-    subject: `New Portfolio Message: ${subject}`,
-    text: `You have a new message from ${name} (${email}):\n\nSubject: ${subject}\n\nMessage:\n${message}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-        <h2 style="color: #333;">New Contact Message Received</h2>
-        <p><strong>From:</strong> ${name} (<a href="mailto:${email}">${email}</a>)</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <hr style="border: 0; border-top: 1px solid #eee;">
-        <p style="white-space: pre-wrap;">${message}</p>
-        <hr style="border: 0; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #666;">This message was sent directly from your portfolio website contact form.</p>
-      </div>
-    `,
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Notification email sent successfully!");
-    console.log("   Message ID:", info.messageId);
+    const { data, error } = await resend.emails.send({
+      from: "Portfolio Contact <onboarding@resend.dev>",
+      to: [process.env.EMAIL_TO || process.env.EMAIL_USER],
+      subject: `New Portfolio Message: ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+          <h2 style="color: #333;">New Contact Message Received</h2>
+          <p><strong>From:</strong> ${name} (<a href="mailto:${email}">${email}</a>)</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <hr style="border: 0; border-top: 1px solid #eee;">
+          <p style="white-space: pre-wrap;">${message}</p>
+          <hr style="border: 0; border-top: 1px solid #eee;">
+          <p style="font-size: 12px; color: #666;">Sent from your portfolio contact form.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error("❌ Resend error:", error);
+      return false;
+    }
+
+    console.log("✅ Email sent successfully via Resend! ID:", data.id);
     return true;
   } catch (error) {
-    console.error("❌ Email delivery failed!");
-    console.error("   Error:", error.message);
-    console.error("   Code:", error.code);
-    // We don't throw here to ensure the API success response still goes through
-    // as the message IS saved in the DB.
+    console.error("❌ Email delivery failed:", error.message);
     return false;
   }
 };
