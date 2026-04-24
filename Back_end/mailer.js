@@ -1,19 +1,16 @@
 const nodemailer = require("nodemailer");
 
-/**
- * Configure the email transporter using process.env credentials.
- * Works with Gmail (App Passwords), Outlook, or SMTP services like Resend/Mailgun.
- */
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.EMAIL_PORT) || 587,
-  secure: process.env.EMAIL_PORT == '465', // true only for 465
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false // Helps with some SMTP servers
+    rejectUnauthorized: false,
+    ciphers: 'SSLv3'
   }
 });
 
