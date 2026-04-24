@@ -36,7 +36,7 @@ const { sendContactNotification } = require("./mailer");
 
 // Health check route
 app.get("/", (req, res) => {
-  res.json({ message: "Portfolio Backend API is running!", status: "OK" });
+  res.json({ message: "Portfolio Backend API is running!", status: "OK", version: "1.0.1" });
 });
 
 // ============================================
