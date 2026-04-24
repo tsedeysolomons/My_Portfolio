@@ -4,7 +4,7 @@ const sendContactNotification = async (contactData) => {
   const { name, email, subject, message } = contactData;
 
   const apiKey = process.env.RESEND_API_KEY;
-  const emailTo = process.env.EMAIL_TO || "tsedeysolomon91@gmail.com";
+  const emailTo = "tsedeysolomon91@gmail.com"; // Resend free plan: must be account owner email
 
   console.log("📧 Attempting to send email via Resend...");
   console.log("   API Key exists:", !!apiKey);
