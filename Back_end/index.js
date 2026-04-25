@@ -24,10 +24,16 @@ app.use(express.json());
 // Rate limiter for contact form (prevent spam)
 const contactLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 requests per windowMs
+  max: 5,
   message: { success: false, error: "Too many requests from this IP, please try again after an hour" },
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
+           req.headers['x-real-ip'] || 
+           req.ip || 
+           'unknown';
+  }
 });
 
 const { body, validationResult } = require('express-validator');
@@ -37,6 +43,18 @@ const { sendContactNotification } = require("./mailer");
 // Health check route
 app.get("/", (req, res) => {
   res.json({ message: "Portfolio Backend API is running!", status: "OK", version: "1.0.1" });
+});
+
+// Email test route
+app.get("/api/test-email", async (req, res) => {
+  const { sendContactNotification } = require("./mailer");
+  const result = await sendContactNotification({
+    name: "Test User",
+    email: "test@example.com",
+    subject: "Test Email",
+    message: "This is a test email from the portfolio backend."
+  });
+  res.json({ success: result, resend_key_set: !!process.env.RESEND_API_KEY });
 });
 
 // ============================================
